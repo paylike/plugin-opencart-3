@@ -5,7 +5,7 @@ available by the community.
 
 Released under the MIT license: https://opensource.org/licenses/MIT
 
-You can also find information about the plugin here: https://paylike.io/plugins/opencart20
+You can also find information about the plugin here: https://paylike.io/plugins
 
 ## Supported OpenCart versions
 
