@@ -5,11 +5,9 @@ class ControllerExtensionPaymentPaylike extends Controller {
 		$this->load->language( 'extension/payment/paylike' );
 		$this->load->model( 'extension/payment/paylike' );
 		$this->load->model( 'checkout/order' );
-		$data['plugin_version'] = '1.0.4';
+		$data['plugin_version'] = '1.0.5';
 		$data['VERSION'] = VERSION;
-		if ( $this->config->get( 'payment_paylike_api_mode' ) == 'test' ) {
-			$data['warning_test_mode'] = $this->language->get( 'warning_test_mode' );
-		}
+		$data['active_mode']=$this->config->get( 'payment_paylike_api_mode' );
 
 		if ( $this->config->get( 'payment_paylike_api_mode' ) == 'live' ) {
 			$data['paylike_public_key'] = $this->config->get( 'payment_paylike_public_key_live' );

@@ -1,4 +1,4 @@
-{% if warning_test_mode %}
+{% if active_mode=='test' %}
 	<div class="alert alert-info attention"><i class="fa fa-exclamation-circle"></i>&nbsp;{{ warning_test_mode }}</div>
 {% endif %}
 <div data-amount="{{ amount }}" style="float: left" id="paylike-payment-widget"></div>
