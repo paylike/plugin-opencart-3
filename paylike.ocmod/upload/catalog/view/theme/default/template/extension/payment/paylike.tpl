@@ -1,4 +1,4 @@
-<?php if($warning_test_mode){ ?>
+<?php if($active_mode=='test'){ ?>
 	<div class="alert alert-info attention"><i class="fa fa-exclamation-circle"></i>&nbsp;<?php echo $warning_test_mode; ?></div>
 <?php } ?>
 <div data-amount="<?php echo $amount; ?>" style="float: left" id="paylike-payment-widget"></div>
