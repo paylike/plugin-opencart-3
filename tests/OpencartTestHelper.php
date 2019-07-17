@@ -55,7 +55,11 @@ class OpencartTestHelper {
 	 * @throws TimeOutException
 	 */
 	public function goToPage( $pagePath, $waitForSelector = null, $is_admin = false ) {
-		$url = $this->helperGetUrl( $pagePath, $is_admin );
+		$url        = $this->helperGetUrl( $pagePath, $is_admin );
+		$user_token = $this->getQuery( 'user_token' );
+		if ( $user_token ) {
+			$pagePath .= '&user_token=' . $user_token;
+		}
 		if ( $url != $this->wd->getCurrentURL() ) {
 			$this->wd->get( $this->helperGetUrl( $pagePath, $is_admin ) );
 		}
@@ -390,6 +394,29 @@ class OpencartTestHelper {
 
 		return $slug;
 
+	}
+
+	private function parseUrl( $url, $decode = false ) {
+		$urlData = parse_url( $url );
+		if ( empty( $urlData['query'] ) ) {
+			return null;
+		}
+		$query      = explode( "&", $urlData['query'] );
+		$parameters = array();
+		foreach ( $query as $parameter ) {
+			$param = explode( "=", $parameter );
+			if ( ! empty( $param ) && count( $param ) == 2 ) {
+				$parameters[ $param[0] ] = $decode == true ? urldecode( $param[1] ) : $param[1];
+			}
+		}
+
+		return $parameters;
+	}
+
+	private function getQuery( $param ) {
+		$url = $this->parseUrl($this->wd->getCurrentURL());
+
+		return $url[ $param ] ?? '';
 	}
 
 

@@ -32,7 +32,7 @@ class OpencartRunner extends OpencartTestHelper {
 	 * @throws TimeOutException
 	 */
 	public function loginAdmin() {
-		$this->goToPage( 'admin/index.php?route=common/login', '#input-username' );
+		$this->goToPage( 'index.php?route=common/login', '#input-username', true );
 		while ( ! $this->hasValue( '#input-username', $this->user ) ) {
 			$this->typeLogin();
 		}
@@ -94,7 +94,7 @@ class OpencartRunner extends OpencartTestHelper {
 	 */
 
 	public function changeMode() {
-		$this->goToPage( 'admin/index.php?route=extension/payment/paylike' );
+		$this->goToPage( 'index.php?route=extension/payment/paylike', null, true );
 		while ( ! $this->hasValue( '#input-username', $this->user ) ) {
 			$this->typeLogin();
 		}
@@ -129,12 +129,9 @@ class OpencartRunner extends OpencartTestHelper {
 	 */
 	private function getVersions() {
 		$opencart = $this->getText( '#footer' );
-		$this->goToPage( "admin/index.php?route=extension/payment/paylike", null );
-		$this->waitForElement( ".module-item-list" );
-		$paylike = "";
-		if ( $this->hasValue( ".module-item", "data-name" ) ) {
-			$paylike = $this->getText( ".col-md-2 .small-text" );
-		}
+		$this->goToPage( "index.php?route=extension/payment/paylike", null, true );
+		$this->waitForElement( ".panel-title" );
+		$paylike = $this->getElementData( ".panel-title", 'paylike-version' );
 
 
 		return [ 'ecommerce' => $opencart, 'plugin' => $paylike ];
@@ -153,17 +150,6 @@ class OpencartRunner extends OpencartTestHelper {
 		$this->main_test->log( "Paylike Version:", $this->getElementData( "//*[contains(@data-name, 'Paylike')]", "version" ) );
 
 	}
-
-
-	/**
-	 * @throws NoSuchElementException
-	 * @throws TimeOutException
-	 */
-	public function changeDecimal() {
-		$this->goToPage( 'wp-admin/admin.php?page=wc-settings', '#select2-opencart_currency-container' );
-		$this->type( '#opencart_price_decimal_sep', '.' );
-	}
-
 	/**
 	 *
 	 */
@@ -179,7 +165,7 @@ class OpencartRunner extends OpencartTestHelper {
 	private function directPayment() {
 		$this->goToPage( 'index.php?route=account/login', '.col-sm-6 #input-email' );
 		$this->loginShop();
-		$this->goToPage( "upload", "#form-currency" );
+		$this->goToPage( "/", "#form-currency" );
 		$this->clearCartItem();
 		$this->changeCurrency();
 		$this->addToCart();
@@ -335,7 +321,7 @@ class OpencartRunner extends OpencartTestHelper {
 	 * @throws TimeOutException
 	 */
 	public function selectOrder() {
-		$this->goToPage( "admin/index.php?route=sale/order" );
+		$this->goToPage( "/index.php?route=sale/order", null, true );
 		while ( ! $this->hasValue( '#input-username', $this->user ) ) {
 			$this->typeLogin();
 		}
@@ -399,19 +385,16 @@ class OpencartRunner extends OpencartTestHelper {
 			return $this;
 		}
 
-
-		if ( $this->settings_check ) {
-			$this->settingsCheck();
-
-			return $this;
-		}
-
-
-		$this->settings();
-
-
-		$this->directPayment();
-
+//
+//		if ( $this->settings_check ) {
+//			$this->settingsCheck();
+//
+//			return $this;
+//		}
+//
+//
+//		$this->settings();
+//		$this->directPayment();
 	}
 
 	/**

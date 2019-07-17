@@ -100,7 +100,7 @@ class OpencartFullTest extends AbstractTestCase {
 				'currency'               => 'DKK',
 				'capture_mode'           => 'instant',
 				'exclude_manual_payment' => false,
-				'log_version' => true,
+				'log_version'            => true,
 			)
 		);
 	}

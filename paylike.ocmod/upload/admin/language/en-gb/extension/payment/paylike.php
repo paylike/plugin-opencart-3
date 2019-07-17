@@ -6,6 +6,7 @@ $_['text_paylike']  = '<a target="_BLANK" href="https://paylike.io"><img src="vi
 $_['text_description']             = 'Short description, maybe link to main website, support, api keys page, etc...';
 $_['text_extension']               = 'Extensions';
 $_['text_edit_settings']           = 'Edit Paylike';
+$_['text_paylike_version']         = '1.0.5';
 $_['text_general_settings']        = 'General';
 $_['text_advanced_settings']       = 'Advanced';
 $_['text_capture_instant']         = 'Instant';
