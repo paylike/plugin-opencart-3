@@ -5,7 +5,7 @@ As you can see the plugin is bundled with selenium testing on this repository. Y
 
 ## Requirements
 
-* A opencart installation is required, in which you need to have the sample theme installed. 
+* A opencart 3 installation is required, in which you need to have the sample theme installed. 
 * You also need to have a test client account with previous purchases and an admin account for which you set the credentials in the .env file
 * Lastly you need to have the currency selector available on the frontend
 
@@ -14,7 +14,7 @@ As you can see the plugin is bundled with selenium testing on this repository. Y
 1. Follow 1 and 2 from the [Steward readme page](https://github.com/lmc-eu/steward#getting-started)
 2. Create an env file in the root folder and add the following:
 `
-ENVIRONMENT_URL="https://opencart.url"
+ENVIRONMENT_URL="https://opencart3.url"
 ENVIRONMENT_USER="username"
 ENVIRONMENT_PASS="yourpassword"
 ENVIRONMENT_CLIENT_USER="client_email"

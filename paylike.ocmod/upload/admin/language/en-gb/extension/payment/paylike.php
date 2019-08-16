@@ -22,10 +22,10 @@ $_['text_live']                    = 'Live';
 //Default
 $_['default_payment_method_title']             = 'Credit Card';
 $_['default_payment_paylike_checkout_cc_logo'] = array(
-	'mastercard.svg',
-	'maestro.svg',
-	'visa.svg',
-	'visaelectron.svg'
+    'mastercard.svg',
+    'maestro.svg',
+    'visa.svg',
+    'visaelectron.svg'
 );
 
 //Buttons

@@ -9,9 +9,9 @@ You can also find information about the plugin here: https://paylike.io/plugins/
 
 ## Supported OpenCart versions
 
-* The plugin has been tested with most versions of Opencart at every iteration. We recommend using the latest version of Opencart, but if that is not possible for some reason, test the plugin with your Opencart version and it would probably function properly. 
-* Opencart
- version last tested on: *3.0.2.0*
+[![Last succesfull test](https://log.derikon.ro/api/v1/log/read?tag=opencart3&view=svg&label=Opencart&key=ecommerce&background=01afe8)](https://log.derikon.ro/api/v1/log/read?tag=opencart3&view=html)
+
+*The plugin has been tested with most versions of Opencart at every iteration. We recommend using the latest version of Opencart, but if that is not possible for some reason, test the plugin with your OpenCart version and it would probably function properly.* 
 
 ## Prerequisites
 

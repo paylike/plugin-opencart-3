@@ -2,7 +2,6 @@
 
 namespace Opencart;
 
-
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -12,33 +11,35 @@ use Lmc\Steward\Test\AbstractTestCase;
 /**
  * @group opencart_quick_test
  */
-class OpencartQuickTest extends AbstractTestCase {
+class OpencartQuickTest extends AbstractTestCase
+{
 
-	public $runner;
+    public $runner;
 
-//	/**
-//	 * @throws NoSuchElementException
-//	 * @throws \Facebook\WebDriver\Exception\TimeOutException
-//	 * @throws \Facebook\WebDriver\Exception\UnexpectedTagNameException
-//	 */
-//	public function testGeneralFunctions() {
-//		$this->runner = new OpencartRunner( $this );
-//		$this->runner->ready( array(
-//				'settings_check' => true,
-//			)
-//		);
-//	}
+    /**
+     * @throws NoSuchElementException
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
+     * @throws \Facebook\WebDriver\Exception\UnexpectedTagNameException
+     */
+    public function testGeneralFunctions()
+    {
+        $this->runner = new OpencartRunner($this);
+        $this->runner->ready(array(
+            'settings_check' => true,
+        ));
+    }
 
-	/**
-	 * @throws NoSuchElementException
-	 * @throws \Facebook\WebDriver\Exception\TimeOutException
-	 * @throws \Facebook\WebDriver\Exception\UnexpectedTagNameException
-	 */
-	public function testUsdPaymentBeforeOrderInstant() {
-		$this->runner = new OpencartRunner( $this );
-		$this->runner->ready( array(
-				'log_version'           => true
-			)
-		);
-	}
+    /**
+     * @throws NoSuchElementException
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
+     * @throws \Facebook\WebDriver\Exception\UnexpectedTagNameException
+     */
+    public function testUsdPaymentBeforeOrderInstant()
+    {
+        $this->runner = new OpencartRunner($this);
+        $this->runner->ready(array(
+            'capture_mode' => 'instant',
+            'currency'     => 'RON',
+        ));
+    }
 }
