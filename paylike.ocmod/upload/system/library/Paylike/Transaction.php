@@ -1,5 +1,6 @@
 <?php
 namespace Paylike;
+
 /**
  * Class Transaction
  * @package Paylike
@@ -7,8 +8,9 @@ namespace Paylike;
  *
  * @version    1.0.0
  */
-if ( ! class_exists( 'Paylike\\Transaction' ) ) {
-    class Transaction {
+if (! class_exists('Paylike\\Transaction')) {
+    class Transaction
+    {
 
 
         /**
@@ -22,13 +24,14 @@ if ( ! class_exists( 'Paylike\\Transaction' ) ) {
          *
          * @return bool|mixed
          */
-        public static function create( $merchantId, $data ) {
+        public static function create($merchantId, $data)
+        {
             $adapter = Client::getAdapter();
-            if ( ! $adapter ) {
-                trigger_error( 'Adapter not set!', E_USER_ERROR );
+            if (! $adapter) {
+                trigger_error('Adapter not set!', E_USER_ERROR);
             }
 
-            return $adapter->request( 'merchants/' . $merchantId . '/transactions', $data );
+            return $adapter->request('merchants/' . $merchantId . '/transactions', $data);
         }
 
         /**
@@ -38,13 +41,14 @@ if ( ! class_exists( 'Paylike\\Transaction' ) ) {
          * Return the transaction data
          *
          */
-        public static function fetch( $transactionId ) {
+        public static function fetch($transactionId)
+        {
             $adapter = Client::getAdapter();
-            if ( ! $adapter ) {
-                trigger_error( 'Adapter not set!', E_USER_ERROR );
+            if (! $adapter) {
+                trigger_error('Adapter not set!', E_USER_ERROR);
             }
 
-            return $adapter->request( 'transactions/' . $transactionId, $data = null, $httpVerb = 'get' );
+            return $adapter->request('transactions/' . $transactionId, $data = null, $httpVerb = 'get');
         }
 
         /**
@@ -56,13 +60,14 @@ if ( ! class_exists( 'Paylike\\Transaction' ) ) {
          *
          * @return bool|int|mixed
          */
-        public static function capture( $transactionId, $data ) {
+        public static function capture($transactionId, $data)
+        {
             $adapter = Client::getAdapter();
-            if ( ! $adapter ) {
-                trigger_error( 'Adapter not set!', E_USER_ERROR );
+            if (! $adapter) {
+                trigger_error('Adapter not set!', E_USER_ERROR);
             }
 
-            return $adapter->request( 'transactions/' . $transactionId . '/captures', $data );
+            return $adapter->request('transactions/' . $transactionId . '/captures', $data);
         }
 
         /**
@@ -74,13 +79,14 @@ if ( ! class_exists( 'Paylike\\Transaction' ) ) {
          *
          * @return bool|int|mixed
          */
-        public static function void( $transactionId, $data ) {
+        public static function void($transactionId, $data)
+        {
             $adapter = Client::getAdapter();
-            if ( ! $adapter ) {
-                trigger_error( 'Adapter not set!', E_USER_ERROR );
+            if (! $adapter) {
+                trigger_error('Adapter not set!', E_USER_ERROR);
             }
 
-            return $adapter->request( 'transactions/' . $transactionId . '/voids', $data );
+            return $adapter->request('transactions/' . $transactionId . '/voids', $data);
         }
 
         /**
@@ -92,14 +98,14 @@ if ( ! class_exists( 'Paylike\\Transaction' ) ) {
          *
          * @return bool|int|mixed
          */
-        public static function refund( $transactionId, $data ) {
+        public static function refund($transactionId, $data)
+        {
             $adapter = Client::getAdapter();
-            if ( ! $adapter ) {
-                trigger_error( 'Adapter not set!', E_USER_ERROR );
+            if (! $adapter) {
+                trigger_error('Adapter not set!', E_USER_ERROR);
             }
 
-            return $adapter->request( 'transactions/' . $transactionId . '/refunds', $data );
+            return $adapter->request('transactions/' . $transactionId . '/refunds', $data);
         }
-
     }
 }
