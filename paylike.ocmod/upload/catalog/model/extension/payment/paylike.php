@@ -39,13 +39,13 @@ class ModelExtensionPaymentPaylike extends Model
             $logos_string = '';
             if (is_array($logos)) {
                 foreach ($logos as $logo) {
-                    $logos_string .= '<img src="./catalog/view/theme/default/image/paylike/' . $logo . '" style="display-inline;height:25px;margin-left:5px;" />';
+                    $logos_string .= '<img src="'.HTTPS_SERVER.'catalog/view/theme/default/image/paylike/' . $logo . '" style="display-inline;height:25px;margin-left:5px;" />';
                 }
             }
             $method_data = array(
                 'code'       => 'paylike',
-                'title'      => $this->config->get('payment_paylike_method_title') . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $logos_string,
-                'terms'      => '',
+                'title'      => $this->config->get('payment_paylike_method_title'),
+                'terms'      => $logos_string,
                 'sort_order' => $this->config->get('payment_paylike_sort_order')
             );
         }
