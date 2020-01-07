@@ -6,10 +6,10 @@ class ModelExtensionPaymentPaylike extends Model
     public function getCcLogos()
     {
         return array(
-            array ( 'name' => 'Mastercard', 'logo' => 'mastercard.svg' ),
-            array ( 'name' => 'Mastercard Maestro', 'logo' => 'maestro.svg' ),
-            array ( 'name' => 'Visa', 'logo' => 'visa.svg' ),
-            array ( 'name' => 'Visa Electron', 'logo' => 'visaelectron.svg' ),
+            array ( 'name' => 'Mastercard', 'logo' => 'mastercard.png' ),
+            array ( 'name' => 'Mastercard Maestro', 'logo' => 'maestro.png' ),
+            array ( 'name' => 'Visa', 'logo' => 'visa.png' ),
+            array ( 'name' => 'Visa Electron', 'logo' => 'visaelectron.png' ),
         );
     }
     
