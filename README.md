@@ -19,10 +19,14 @@ You can also find information about the plugin here: https://paylike.io/plugins/
 
 ## Installation
 
+Once you have installed OpenCart, follow these simple steps:
+1. Signup at [paylike.io](https://paylike.io) (it’s free)
+1. Create a live account
+1. Create an app key for your OpenCart website
 1. Upload the paylike.ocmod.zip file in the extensions uploader. 
-2. Log in as administrator and click  "Extensions" from the top menu then "extension" then "payments" and install the Paylike plugin by clicking the `Install` link listed there.
-3. Click the Edit Paylike button 
-4. Add the Public and App key that you can find in your Paylike account and enable the plugin
+1. Log in as administrator and click  "Extensions" from the top menu then "extension" then "payments" and install the Paylike plugin by clicking the `Install` link listed there.
+1. Click the Edit Paylike button 
+1. Add the Public and App key that you can find in your Paylike account and enable the plugin
 
 ## Updating settings
 
