@@ -1,6 +1,6 @@
 .idea
 .DS_Store
 .env
-vendor
+#vendor
 logs
 git-hooks
