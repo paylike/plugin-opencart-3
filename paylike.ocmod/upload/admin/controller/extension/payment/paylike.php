@@ -861,13 +861,13 @@ class ControllerExtensionPaymentPaylike extends Controller
 
 
     /**
-  	 * Validate the App key.
-  	 *
-  	 * @param string $value - the value of the input.
-  	 * @param string $mode - the transaction mode 'test' | 'live'.
-  	 *
-  	 * @return string - the error message
-  	 */
+      * Validate the App key.
+      *
+      * @param string $value - the value of the input.
+      * @param string $mode - the transaction mode 'test' | 'live'.
+      *
+      * @return string - the error message
+      */
   	protected function validateAppKeyField( $value, $mode ) {
         /** Check if the key value is empty **/
         if ( ! $value ) {
@@ -876,45 +876,45 @@ class ControllerExtensionPaymentPaylike extends Controller
         /** Load the client from API**/
         $paylikeClient = new \Paylike\Paylike( $value );
         try {
-          	/** Load the identity from API**/
-          	$identity = $paylikeClient->apps()->fetch();
+            /** Load the identity from API**/
+            $identity = $paylikeClient->apps()->fetch();
         } catch ( \Paylike\Exception\ApiException $exception ) {
             $this->log->write(sprintf($this->language->get('error_app_key_invalid'),$mode));
             return sprintf($this->language->get('error_app_key_invalid'),$mode);
         }
 
         try {
-          	/** Load the merchants public keys list corresponding for current identity **/
-          	$merchants = $paylikeClient->merchants()->find( $identity['id'] );
-          	if ( $merchants ) {
-            		foreach ( $merchants as $merchant ) {
-            			/** Check if the key mode is the same as the transaction mode **/
-              		  if(($mode == 'test' && $merchant['test']) || ($mode != 'test' && !$merchant['test'])){
-              				    $this->validationPublicKeys[$mode][] = $merchant['key'];
-              			}
-            		}
-          	}
+            /** Load the merchants public keys list corresponding for current identity **/
+            $merchants = $paylikeClient->merchants()->find( $identity['id'] );
+            if ( $merchants ) {
+                foreach ( $merchants as $merchant ) {
+                    /** Check if the key mode is the same as the transaction mode **/
+                    if(($mode == 'test' && $merchant['test']) || ($mode != 'test' && !$merchant['test'])){
+                        $this->validationPublicKeys[$mode][] = $merchant['key'];
+                    }
+                }
+            }
         } catch ( \Paylike\Exception\ApiException $exception ) {
             $this->log->write(sprintf($this->language->get('error_app_key_invalid'),$mode));
         }
         /** Check if public keys array for the current mode is populated **/
         if ( empty( $this->validationPublicKeys[$mode] ) ) {
-          	/** Generate the error based on the current mode **/
+            /** Generate the error based on the current mode **/
             $error = sprintf($this->language->get('error_app_key_invalid_mode'),$mode,array_values(array_diff(array_keys($this->validationPublicKeys), array($mode)))[0]);
             $this->log->write($error);
 
             return $error;
         }
-  	}
+    }
 
     /**
-     * Validate the Public key.
-     *
-     * @param string $value - the value of the input.
-     * @param string $mode - the transaction mode 'test' | 'live'.
-     *
-     * @return string - the error message
-     */
+      * Validate the Public key.
+      *
+      * @param string $value - the value of the input.
+      * @param string $mode - the transaction mode 'test' | 'live'.
+      *
+      * @return string - the error message
+      */
     protected function validatePublicKeyField($value, $mode) {
         /** Check if the key value is not empty **/
         if ( ! $value ) {
