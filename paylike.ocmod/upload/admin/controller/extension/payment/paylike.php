@@ -868,7 +868,7 @@ class ControllerExtensionPaymentPaylike extends Controller
       *
       * @return string - the error message
       */
-  	protected function validateAppKeyField( $value, $mode ) {
+      protected function validateAppKeyField( $value, $mode ) {
         /** Check if the key value is empty **/
         if ( ! $value ) {
             return sprintf($this->language->get('error_app_key'),$mode);
