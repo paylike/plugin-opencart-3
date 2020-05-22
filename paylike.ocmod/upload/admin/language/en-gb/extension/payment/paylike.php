@@ -80,7 +80,9 @@ $_['help_store']                      = 'Select which stores can use Paylike pay
 $_['error_permission']           = 'Warning: You do not have permission to modify payment Paylike!';
 $_['error_warning']              = 'Warning: Please check the form carefully for errors!';
 $_['error_payment_method_title'] = 'Payment Method Title Required!';
-$_['error_public_key_test']      = 'Test Public Key is required when Test mode is enabled!';
-$_['error_app_key_test']         = 'Test App Key is required when Test mode is enabled!';
-$_['error_public_key_live']      = 'Live Public Key is required when Test mode is disabled!';
-$_['error_app_key_live']         = 'Live App Key is required when Test mode is disabled!';
+
+$_['error_app_key']              = 'The %s App Key is required!';
+$_['error_public_key']           = 'The %s Public Key is required!';
+$_['error_app_key_invalid']      = 'The %s App Key doesn\'t seem to be valid!';
+$_['error_public_key_invalid']   = 'The %s Public Key doesn\'t seem to be valid!';
+$_['error_app_key_invalid_mode'] = 'The %s App Key is not valid or set to %s mode!';

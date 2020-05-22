@@ -135,23 +135,7 @@
                                 </div>
                             </div>
 
-
-                            <div class="form-group required">
-                                <label class="col-sm-2 control-label" for="input_public_key_test"><span
-                                            data-toggle="tooltip"
-                                            title="<?php echo $help_public_key_test; ?>"><?php echo $entry_public_key_test; ?></span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="payment_paylike_public_key_test"
-                                            value="<?php echo $payment_paylike_public_key_test; ?>"
-                                            placeholder="<?php echo $entry_public_key_test; ?>"
-                                            id="input_public_key_test" class="form-control"/>
-                                    <?php if($error_public_key_test){ ?>
-                                    <div class="text-danger"><?php echo $error_public_key_test; ?></div>
-                                    <?php } ?>
-                                </div>
-                            </div>
-
-                            <div class="form-group required">
+                            <div class="form-group required js-test-key">
                                 <label class="col-sm-2 control-label" for="input_app_key_test"><span
                                             data-toggle="tooltip"
                                             title="<?php echo $help_app_key_test; ?>"><?php echo $entry_app_key_test; ?></span></label>
@@ -166,7 +150,37 @@
                                 </div>
                             </div>
 
-                            <div class="form-group required">
+                            <div class="form-group required js-test-key">
+                                <label class="col-sm-2 control-label" for="input_public_key_test"><span
+                                            data-toggle="tooltip"
+                                            title="<?php echo $help_public_key_test; ?>"><?php echo $entry_public_key_test; ?></span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_paylike_public_key_test"
+                                            value="<?php echo $payment_paylike_public_key_test; ?>"
+                                            placeholder="<?php echo $entry_public_key_test; ?>"
+                                            id="input_public_key_test" class="form-control"/>
+                                    <?php if($error_public_key_test){ ?>
+                                    <div class="text-danger"><?php echo $error_public_key_test; ?></div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group required js-live-key">
+                                <label class="col-sm-2 control-label" for="input_app_key_live"><span
+                                            data-toggle="tooltip"
+                                            title="<?php echo $help_app_key_live; ?>"><?php echo $entry_app_key_live; ?></span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_paylike_app_key_live"
+                                            value="<?php echo $payment_paylike_app_key_live; ?>"
+                                            placeholder="<?php echo $entry_app_key_live; ?>" id="input_app_key_live"
+                                            class="form-control"/>
+                                    <?php if($error_app_key_live){ ?>
+                                    <div class="text-danger"><?php echo $error_app_key_live; ?></div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group required js-live-key">
                                 <label class="col-sm-2 control-label" for="input_public_key_live"><span
                                             data-toggle="tooltip"
                                             title="<?php echo $help_public_key_live; ?>"><?php echo $entry_public_key_live; ?></span></label>
@@ -181,20 +195,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group required">
-                                <label class="col-sm-2 control-label" for="input_app_key_live"><span
-                                            data-toggle="tooltip"
-                                            title="<?php echo $help_app_key_live; ?>"><?php echo $entry_app_key_live; ?></span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="payment_paylike_app_key_live"
-                                            value="<?php echo $payment_paylike_app_key_live; ?>"
-                                            placeholder="<?php echo $entry_app_key_live; ?>" id="input_app_key_live"
-                                            class="form-control"/>
-                                    <?php if($error_app_key_live){ ?>
-                                    <div class="text-danger"><?php echo $error_app_key_live; ?></div>
-                                    <?php } ?>
-                                </div>
-                            </div>
 
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input_capture_mode"><span
@@ -389,9 +389,26 @@
     </div>
 </div>
 
-<script type="text/javascript"><
-    !--
+<script type="text/javascript">
         $('#tabs a:first').tab('show');
+
+        /** Triggern on selection change */
+        $(document).on('change','#input_api_mode', function(){
+            toggleFields($(this).val());
+        });
+        /** Triggern on when DOM is ready */
+        toggleFields($("#input_api_mode").val());
+
+        /** Show/Hide live and test fields based on selected value of the "#input_api_mode" selectbox*/
+        function toggleFields(mode){
+          if(mode == 'live'){
+              $('.js-live-key').css('display','block');
+              $('.js-test-key').css('display','none');
+          } else {
+            $('.js-live-key').css('display','none');
+            $('.js-test-key').css('display','block');
+          }
+        }
 </script>
 
 <?php echo $footer; ?>
