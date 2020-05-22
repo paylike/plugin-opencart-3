@@ -2,28 +2,28 @@
 <modification>
     <code>00001</code>
     <name>Paylike Payments Modification</name>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <author>Ljupcho Prchkovski</author>
     <link>http://paylike.io</link>
-	
+
     <file path="admin/controller/common/column_left.php">
     	<operation>
     		<search><![CDATA[if ($this->user->hasPermission('access', 'sale/recurring')) {]]></search>
-    		<add position="before"><![CDATA[                
+    		<add position="before"><![CDATA[
 			// Paylike - OCMOD >>
 			if ($this->user->hasPermission('access', 'extension/payment/paylike')) {
 				if( version_compare(VERSION, '3.0.0.0', '>=') ) {
 					$sale[] = array(
 						'name'	   => 'Paylike Payments',
 						'href'     => $this->url->link('extension/payment/paylike/payments', 'user_token=' . $this->session->data['user_token'], true),
-						'children' => array()		
-					);	
+						'children' => array()
+					);
 				}else{
 					$sale[] = array(
 						'name'	   => 'Paylike Payments',
 						'href'     => $this->url->link('extension/payment/paylike/payments', 'token=' . $this->session->data['token'], true),
-						'children' => array()		
-					);	
+						'children' => array()
+					);
 				}
 			}
 			// << Paylike - OCMOD
