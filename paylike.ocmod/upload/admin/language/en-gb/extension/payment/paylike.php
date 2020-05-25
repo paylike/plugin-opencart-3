@@ -6,7 +6,7 @@ $_['text_paylike']  = '<a target="_BLANK" href="https://paylike.io"><img src="vi
 $_['text_description']             = 'Paylike enables you to accept credit and debit cards on your OpenCart platform. If you don\'t already have an account with Paylike, you can create it at https://paylike.io. Need help with the setup? Read our documentation at https://paylike.io/plugins/opencart-2.3';
 $_['text_extension']               = 'Extensions';
 $_['text_edit_settings']           = 'Edit Paylike';
-$_['text_paylike_version']         = '1.0.7';
+$_['text_paylike_version']         = '1.0.8';
 $_['text_general_settings']        = 'General';
 $_['text_advanced_settings']       = 'Advanced';
 $_['text_capture_instant']         = 'Instant';
@@ -80,7 +80,9 @@ $_['help_store']                      = 'Select which stores can use Paylike pay
 $_['error_permission']           = 'Warning: You do not have permission to modify payment Paylike!';
 $_['error_warning']              = 'Warning: Please check the form carefully for errors!';
 $_['error_payment_method_title'] = 'Payment Method Title Required!';
-$_['error_public_key_test']      = 'Test Public Key is required when Test mode is enabled!';
-$_['error_app_key_test']         = 'Test App Key is required when Test mode is enabled!';
-$_['error_public_key_live']      = 'Live Public Key is required when Test mode is disabled!';
-$_['error_app_key_live']         = 'Live App Key is required when Test mode is disabled!';
+
+$_['error_app_key']              = 'The %s App Key is required!';
+$_['error_public_key']           = 'The %s Public Key is required!';
+$_['error_app_key_invalid']      = 'The %s App Key doesn\'t seem to be valid!';
+$_['error_public_key_invalid']   = 'The %s Public Key doesn\'t seem to be valid!';
+$_['error_app_key_invalid_mode'] = 'The %s App Key is not valid or set to %s mode!';

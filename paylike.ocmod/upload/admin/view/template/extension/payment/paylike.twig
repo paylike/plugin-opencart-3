@@ -135,22 +135,7 @@
                             </div>
 
 
-                            <div class="form-group required">
-                                <label class="col-sm-2 control-label" for="input_public_key_test"><span
-                                            data-toggle="tooltip"
-                                            title="{{ help_public_key_test }}">{{ entry_public_key_test }}</span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="payment_paylike_public_key_test"
-                                            value="{{ payment_paylike_public_key_test }}"
-                                            placeholder="{{ entry_public_key_test }}" id="input_public_key_test"
-                                            class="form-control"/>
-                                    {% if error_public_key_test %}
-                                        <div class="text-danger">{{ error_public_key_test }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="form-group required">
+                            <div class="form-group required js-test-key">
                                 <label class="col-sm-2 control-label" for="input_app_key_test"><span
                                             data-toggle="tooltip"
                                             title="{{ help_app_key_test }}">{{ entry_app_key_test }}</span></label>
@@ -165,22 +150,23 @@
                                 </div>
                             </div>
 
-                            <div class="form-group required">
-                                <label class="col-sm-2 control-label" for="input_public_key_live"><span
+                            <div class="form-group required js-test-key">
+                                <label class="col-sm-2 control-label" for="input_public_key_test"><span
                                             data-toggle="tooltip"
-                                            title="{{ help_public_key_live }}">{{ entry_public_key_live }}</span></label>
+                                            title="{{ help_public_key_test }}">{{ entry_public_key_test }}</span></label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="payment_paylike_public_key_live"
-                                            value="{{ payment_paylike_public_key_live }}"
-                                            placeholder="{{ entry_public_key_live }}" id="input_public_key_live"
+                                    <input type="text" name="payment_paylike_public_key_test"
+                                            value="{{ payment_paylike_public_key_test }}"
+                                            placeholder="{{ entry_public_key_test }}" id="input_public_key_test"
                                             class="form-control"/>
-                                    {% if error_public_key_live %}
-                                        <div class="text-danger">{{ error_public_key_live }}</div>
+                                    {% if error_public_key_test %}
+                                        <div class="text-danger">{{ error_public_key_test }}</div>
                                     {% endif %}
                                 </div>
                             </div>
 
-                            <div class="form-group required">
+
+                            <div class="form-group required js-live-key">
                                 <label class="col-sm-2 control-label" for="input_app_key_live"><span
                                             data-toggle="tooltip"
                                             title="{{ help_app_key_live }}">{{ entry_app_key_live }}</span></label>
@@ -191,6 +177,21 @@
                                             class="form-control"/>
                                     {% if error_app_key_live %}
                                         <div class="text-danger">{{ error_app_key_live }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group required js-live-key">
+                                <label class="col-sm-2 control-label" for="input_public_key_live"><span
+                                            data-toggle="tooltip"
+                                            title="{{ help_public_key_live }}">{{ entry_public_key_live }}</span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_paylike_public_key_live"
+                                            value="{{ payment_paylike_public_key_live }}"
+                                            placeholder="{{ entry_public_key_live }}" id="input_public_key_live"
+                                            class="form-control"/>
+                                    {% if error_public_key_live %}
+                                        <div class="text-danger">{{ error_public_key_live }}</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -388,9 +389,26 @@
     </div>
 </div>
 
-<script type="text/javascript"><
-    !--
+<script type="text/javascript">
         $('#tabs a:first').tab('show');
+
+        /** Triggern on selection change */
+        $(document).on('change','#input_api_mode', function(){
+            toggleFields($(this).val());
+        });
+        /** Triggern on when DOM is ready */
+        toggleFields($("#input_api_mode").val());
+
+        /** Show/Hide live and test fields based on selected value of the "#input_api_mode" selectbox*/
+        function toggleFields(mode){
+          if(mode == 'live'){
+              $('.js-live-key').css('display','block');
+              $('.js-test-key').css('display','none');
+          } else {
+            $('.js-live-key').css('display','none');
+            $('.js-test-key').css('display','block');
+          }
+        }
 </script>
 
 {{ footer }}

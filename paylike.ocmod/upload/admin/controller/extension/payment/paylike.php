@@ -1,9 +1,9 @@
 <?php
-
 class ControllerExtensionPaymentPaylike extends Controller
 {
     private $error = array();
     private $oc_token = '';
+    private $validationPublicKeys = array ('live'=>array(),'test'=>array());
 
     public function index()
     {
@@ -21,6 +21,7 @@ class ControllerExtensionPaymentPaylike extends Controller
             $this->model_extension_payment_paylike->upgrade();
             $upgrade = true;
         }
+
         if (is_null($this->config->get('payment_paylike_method_title'))) {
             $this->session->data['error_warning'] = $this->language->get('text_setting_review_required');
         }
@@ -192,28 +193,28 @@ class ControllerExtensionPaymentPaylike extends Controller
             $data['payment_paylike_checkout_display_mode'] = $this->config->get('payment_paylike_checkout_display_mode');
         }
 
-        if (isset($this->request->post['payment_paylike_public_key_test'])) {
-            $data['payment_paylike_public_key_test'] = $this->request->post['payment_paylike_public_key_test'];
-        } else {
-            $data['payment_paylike_public_key_test'] = $this->config->get('payment_paylike_public_key_test');
-        }
-
         if (isset($this->request->post['payment_paylike_app_key_test'])) {
             $data['payment_paylike_app_key_test'] = $this->request->post['payment_paylike_app_key_test'];
         } else {
             $data['payment_paylike_app_key_test'] = $this->config->get('payment_paylike_app_key_test');
         }
 
-        if (isset($this->request->post['payment_paylike_public_key_live'])) {
-            $data['payment_paylike_public_key_live'] = $this->request->post['payment_paylike_public_key_live'];
+        if (isset($this->request->post['payment_paylike_public_key_test'])) {
+            $data['payment_paylike_public_key_test'] = $this->request->post['payment_paylike_public_key_test'];
         } else {
-            $data['payment_paylike_public_key_live'] = $this->config->get('payment_paylike_public_key_live');
+            $data['payment_paylike_public_key_test'] = $this->config->get('payment_paylike_public_key_test');
         }
 
         if (isset($this->request->post['payment_paylike_app_key_live'])) {
             $data['payment_paylike_app_key_live'] = $this->request->post['payment_paylike_app_key_live'];
         } else {
             $data['payment_paylike_app_key_live'] = $this->config->get('payment_paylike_app_key_live');
+        }
+
+        if (isset($this->request->post['payment_paylike_public_key_live'])) {
+            $data['payment_paylike_public_key_live'] = $this->request->post['payment_paylike_public_key_live'];
+        } else {
+            $data['payment_paylike_public_key_live'] = $this->config->get('payment_paylike_public_key_live');
         }
 
         if (isset($this->request->post['payment_paylike_api_mode'])) {
@@ -367,42 +368,6 @@ class ControllerExtensionPaymentPaylike extends Controller
     {
         $this->load->model('extension/payment/paylike');
         $this->model_extension_payment_paylike->uninstall();
-    }
-
-    protected function validate()
-    {
-        if (! $this->user->hasPermission('modify', 'extension/payment/paylike')) {
-            $this->error['warning'] = $this->language->get('error_permission');
-        }
-        if ($this->request->post['payment_paylike_method_title'] == '') {
-            $this->error['error_payment_method_title'] = $this->language->get('error_payment_method_title');
-        }
-        if ($this->request->post['payment_paylike_api_mode'] == 'live') {
-            if ($this->request->post['payment_paylike_public_key_live'] == '') {
-                $this->error['error_public_key_live'] = $this->language->get('error_public_key_live');
-            }
-            if ($this->request->post['payment_paylike_app_key_live'] == '') {
-                $this->error['error_app_key_live'] = $this->language->get('error_app_key_live');
-            }
-        } else {
-            if ($this->request->post['payment_paylike_public_key_test'] == '') {
-                $this->error['error_public_key_test'] = $this->language->get('error_public_key_test');
-            }
-            if ($this->request->post['payment_paylike_app_key_test'] == '') {
-                $this->error['error_app_key_test'] = $this->language->get('error_app_key_test');
-            }
-        }
-        if (! is_numeric($this->request->post['payment_paylike_minimum_total'])) {
-            $this->request->post['payment_paylike_minimum_total'] = 0;
-        }
-        if (! is_numeric($this->request->post['payment_paylike_sort_order'])) {
-            $this->request->post['payment_paylike_sort_order'] = 0;
-        }
-        if ($this->error && ! isset($this->error['warning'])) {
-            $this->error['warning'] = $this->language->get('error_warning');
-        }
-
-        return ! $this->error;
     }
 
     public function payments()
@@ -847,6 +812,123 @@ class ControllerExtensionPaymentPaylike extends Controller
             return $json;
         }
     }
+
+    protected function validate()
+    {
+        if (! $this->user->hasPermission('modify', 'extension/payment/paylike')) {
+            $this->error['warning'] = $this->language->get('error_permission');
+        }
+        if ($this->request->post['payment_paylike_method_title'] == '') {
+            $this->error['error_payment_method_title'] = $this->language->get('error_payment_method_title');
+        }
+
+        /** Include the last version API via autoloader */
+        require_once(DIR_SYSTEM.'library/Paylike/vendor/autoload.php');
+        if ($this->request->post['payment_paylike_api_mode'] == 'live') {
+            $error_app_key_live = $this->validateAppKeyField($this->request->post['payment_paylike_app_key_live'],'live');
+            if($error_app_key_live){
+                $this->error['error_app_key_live'] = $error_app_key_live;
+            }
+
+            $error_public_key_live = $this->validatePublicKeyField($this->request->post['payment_paylike_public_key_live'],'live');
+            if($error_public_key_live){
+                $this->error['error_public_key_live'] =$error_public_key_live;
+            }
+
+        } else {
+            $error_app_key_test = $this->validateAppKeyField($this->request->post['payment_paylike_app_key_test'],'test');
+            if($error_app_key_test){
+                $this->error['error_app_key_test'] = $error_app_key_test;
+            }
+
+            $error_public_key_test = $this->validatePublicKeyField($this->request->post['payment_paylike_public_key_test'],'test');
+            if($error_public_key_test){
+                $this->error['error_public_key_test'] = $error_public_key_test;
+            }
+        }
+
+        if (! is_numeric($this->request->post['payment_paylike_minimum_total'])) {
+            $this->request->post['payment_paylike_minimum_total'] = 0;
+        }
+        if (! is_numeric($this->request->post['payment_paylike_sort_order'])) {
+            $this->request->post['payment_paylike_sort_order'] = 0;
+        }
+        if ($this->error && ! isset($this->error['warning'])) {
+            $this->error['warning'] = $this->language->get('error_warning');
+        }
+        return ! $this->error;
+    }
+
+
+    /**
+      * Validate the App key.
+      *
+      * @param string $value - the value of the input.
+      * @param string $mode - the transaction mode 'test' | 'live'.
+      *
+      * @return string - the error message
+      */
+      protected function validateAppKeyField( $value, $mode ) {
+        /** Check if the key value is empty **/
+        if ( ! $value ) {
+            return sprintf($this->language->get('error_app_key'),$mode);
+        }
+        /** Load the client from API**/
+        $paylikeClient = new \Paylike\Paylike( $value );
+        try {
+            /** Load the identity from API**/
+            $identity = $paylikeClient->apps()->fetch();
+        } catch ( \Paylike\Exception\ApiException $exception ) {
+            $this->log->write(sprintf($this->language->get('error_app_key_invalid'),$mode));
+            return sprintf($this->language->get('error_app_key_invalid'),$mode);
+        }
+
+        try {
+            /** Load the merchants public keys list corresponding for current identity **/
+            $merchants = $paylikeClient->merchants()->find( $identity['id'] );
+            if ( $merchants ) {
+                foreach ( $merchants as $merchant ) {
+                    /** Check if the key mode is the same as the transaction mode **/
+                    if(($mode == 'test' && $merchant['test']) || ($mode != 'test' && !$merchant['test'])){
+                        $this->validationPublicKeys[$mode][] = $merchant['key'];
+                    }
+                }
+            }
+        } catch ( \Paylike\Exception\ApiException $exception ) {
+            $this->log->write(sprintf($this->language->get('error_app_key_invalid'),$mode));
+        }
+        /** Check if public keys array for the current mode is populated **/
+        if ( empty( $this->validationPublicKeys[$mode] ) ) {
+            /** Generate the error based on the current mode **/
+            $error = sprintf($this->language->get('error_app_key_invalid_mode'),$mode,array_values(array_diff(array_keys($this->validationPublicKeys), array($mode)))[0]);
+            $this->log->write($error);
+
+            return $error;
+        }
+    }
+
+    /**
+      * Validate the Public key.
+      *
+      * @param string $value - the value of the input.
+      * @param string $mode - the transaction mode 'test' | 'live'.
+      *
+      * @return string - the error message
+      */
+    protected function validatePublicKeyField($value, $mode) {
+        /** Check if the key value is not empty **/
+        if ( ! $value ) {
+            return sprintf($this->language->get('error_public_key'),$mode);
+        }
+        /** Check if the local stored public keys array is empty OR the key is not in public keys list **/
+        if ( empty( $this->validationPublicKeys[$mode] ) || ! in_array( $value, $this->validationPublicKeys[$mode] ) ) {
+            $error = sprintf($this->language->get('error_public_key_invalid'),$mode);
+            $this->log->write($error);
+
+            return $error;
+        }
+    }
+
 
     protected function transaction_validate()
     {
