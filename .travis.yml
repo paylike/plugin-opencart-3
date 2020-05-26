@@ -4,6 +4,8 @@ php:
   - 7.2
 addons:
   chrome: stable
+  artifacts:
+    debug: true
 env:
   global:
     - USE_STEWARD_MASTER=1

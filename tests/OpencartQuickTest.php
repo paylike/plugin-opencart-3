@@ -26,7 +26,7 @@ class OpencartQuickTest extends AbstractTestCase
         $this->runner = new OpencartRunner($this);
         $this->runner->ready(array(
             'capture_mode' => 'instant',
-            'currency'     => 'RON',
+            'currency'     => 'USD',
         ));
     }
 }
