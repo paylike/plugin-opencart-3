@@ -1,4 +1,4 @@
-# OpenCart plugin for Paylike
+# OpenCart plugin for Paylike [![Build Status](https://travis-ci.org/paylike/plugin-opencart-3.svg?branch=master)](https://travis-ci.org/paylike/plugin-opencart-3)
 
 This plugin is *not* developed or maintained by Paylike but kindly made
 available by the community.
@@ -39,6 +39,6 @@ Under the extension settings, you can:
  * Change the capture type (Instant/Manual via Paylike Tool)
  * Change the order statuses that the orders will get after a certain payment action is done (void/refund/capture/authorization)
  
- ## How to capture / managing transactions
+ ## How to capture / manage transactions
   
   The transactions will show up under paylike payments (admin/index.php?route=extension/payment/paylike/payments) and they can be reached by clicking the green button at the top of the extension settings page. Here you can see refund/void and capture transactions depending on their status. 
