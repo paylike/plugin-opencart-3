@@ -262,12 +262,12 @@ class OpencartRunner extends OpencartTestHelper
      */
     public function proceedToCheckout()
     {
-        $this->click("//*[contains(@title, 'Checkout')]");
+        $this->goToPage("index.php?route=checkout/checkout");
         try {
             $this->waitForElement("#button-payment-address");
         } catch (NoSuchElementException $exception) {
             $this->loginShop();
-            $this->click("//*[contains(@title, 'Checkout')]");
+            $this->goToPage("index.php?route=checkout/checkout");
             $this->waitForElement("#button-payment-address");
         }
         $this->click("#button-payment-address");
@@ -295,6 +295,12 @@ class OpencartRunner extends OpencartTestHelper
      */
     public function finalPaylike()
     {
+        $amount         = $this->getElementData('#paylike-payment-widget','amount');
+        $expectedAmount = $this->getText('.table-responsive tfoot tr:last-child td:last-child');
+        $expectedAmount = preg_replace("/[^0-9.]/", "", $expectedAmount);
+        $expectedAmount = trim($expectedAmount, '.');
+        $expectedAmount = ceil(round($expectedAmount, 3) * get_paylike_currency_multiplier($this->currency));
+        $this->main_test->assertEquals($expectedAmount, $amount, "Checking minor amount for " . $this->currency);
         $this->popupPaylike();
     }
 

@@ -18,18 +18,6 @@ class OpencartFullTest extends AbstractTestCase
 
     public $runner;
 
-    /**
-     * @throws NoSuchElementException
-     * @throws TimeOutException
-     * @throws UnexpectedTagNameException
-     */
-    public function testGeneralFunctions()
-    {
-        $this->runner = new OpencartRunner($this);
-        $this->runner->ready(array(
-                'settings_check' => true,
-            ));
-    }
 
     /**
      * @throws NoSuchElementException
