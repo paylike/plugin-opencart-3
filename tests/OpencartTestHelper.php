@@ -90,13 +90,21 @@ class OpencartTestHelper
      * @param $pagePath
      *
      * @return OpencartTestHelper
-     * @throws NoSuchElementException
-     * @throws TimeOutException
+     * @throws \Facebook\WebDriver\Exception\NoSuchElementException
+     * @throws \Facebook\WebDriver\Exception\TimeOutException
      */
-    public function waitForPage($pagePath)
-    {
-        $this->wd->wait(5, 500)->until(
-            WebDriverExpectedCondition::urlIs($this->helperGetUrl($pagePath))
+    public function waitForPage( $pagePath ) {
+        $url = $this->helperGetUrl( $pagePath );
+        $url = explode( '@', $url );
+        if ( count( $url ) > 1 ) {
+            $left = explode( '://', $url[0] );
+            $url = $left[0] . '://' . $url[1];
+        } else {
+            $url = $url[0];
+        }
+
+        $this->wd->wait( 5, 500 )->until(
+            WebDriverExpectedCondition::urlIs( $url )
         );
 
         return $this;

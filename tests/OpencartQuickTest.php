@@ -21,19 +21,6 @@ class OpencartQuickTest extends AbstractTestCase
      * @throws \Facebook\WebDriver\Exception\TimeOutException
      * @throws \Facebook\WebDriver\Exception\UnexpectedTagNameException
      */
-    public function testGeneralFunctions()
-    {
-        $this->runner = new OpencartRunner($this);
-        $this->runner->ready(array(
-            'settings_check' => true,
-        ));
-    }
-
-    /**
-     * @throws NoSuchElementException
-     * @throws \Facebook\WebDriver\Exception\TimeOutException
-     * @throws \Facebook\WebDriver\Exception\UnexpectedTagNameException
-     */
     public function testUsdPaymentBeforeOrderInstant()
     {
         $this->runner = new OpencartRunner($this);
