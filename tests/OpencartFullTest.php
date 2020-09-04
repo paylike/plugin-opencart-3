@@ -90,11 +90,4 @@ class OpencartFullTest extends AbstractTestCase
             ));
     }
 
-    public function testVersions()
-    {
-        $this->runner = new OpencartRunner($this);
-        $this->runner->ready(array(
-                'log_version' => true,
-            ));
-    }
 }

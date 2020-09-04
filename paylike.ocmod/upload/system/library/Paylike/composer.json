@@ -2,7 +2,7 @@
   "name": "genuineq/module-paylike",
   "description": "Paylike integration with payment gateway prestashop",
   "type": "opencart-module",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": [
       "GPL-3.0-or-later"
   ],
