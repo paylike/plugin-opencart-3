@@ -31,10 +31,10 @@
 	      orderId: '<?php echo $order_id; ?>',
 	      products: <?php echo $products; ?>,
 	      customer: {
-	        name: '<?php echo $name; ?>',
+	        name: "<?php echo $name; ?>",
 	        email: '<?php echo $email; ?>',
 	        phoneNo: '<?php echo $telephone; ?>',
-	        address: '<?php echo $address; ?>',
+	        address: "<?php echo $address; ?>",
 	        IP: '<?php echo $ip; ?>'
 	      },
 	      platform: {
