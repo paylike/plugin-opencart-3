@@ -672,6 +672,8 @@ class ControllerExtensionPaymentPaylike extends Controller
         $input_amount = $this->request->post['amount'];
 
         $history = $this->model_extension_payment_paylike->getLastTransaction($ref);
+        $history['transaction_currency'] = strtoupper($history['transaction_currency']);
+        
         if (is_null($history)) {
             $json['error'] = $this->language->get('error_message');
 

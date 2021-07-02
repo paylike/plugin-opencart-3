@@ -40,9 +40,9 @@ class ControllerExtensionPaymentPaylike extends Controller
         $data['address'] .= $order_info['payment_country'] . ' - ' . $order_info['payment_postcode'];
 
         $data['ip']            = $order_info['ip'];
-        $amount                = $this->getAmountsFromOrderAmount($order_info['total'], $order_info['currency_code']);
+        $amount                = $this->getAmountsFromOrderAmount($order_info['total'], strtoupper($order_info['currency_code']));
         $data['amount']        = $amount['paylike'];
-        $data['currency_code'] = $order_info['currency_code'];
+        $data['currency_code'] = strtoupper($order_info['currency_code']);
 
         $products       = $this->cart->getProducts();
         $products_array = array();
@@ -106,6 +106,7 @@ class ControllerExtensionPaymentPaylike extends Controller
 
         $this->load->model('checkout/order');
         $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+        $order_info['currency_code'] = strtoupper($order_info['currency_code']);
         $amount     = $this->getAmountsFromOrderAmount($order_info['total'], $order_info['currency_code']);
 
         $trans_data = Paylike\Transaction::fetch($ref);
