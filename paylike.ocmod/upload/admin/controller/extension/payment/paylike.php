@@ -534,9 +534,10 @@ class ControllerExtensionPaymentPaylike extends Controller
             'limit'                   => $this->config->get('config_limit_admin')
         );
 
-        $data['transactions'] = array();
-        $transactions_total   = $this->model_extension_payment_paylike->getTotalTransactions($filter_data);
-        $results              = $this->model_extension_payment_paylike->getTransactions($filter_data);
+        $data['transactions']           = array();
+        $transactions_total             = $this->model_extension_payment_paylike->getTotalTransactions($filter_data);
+        $results                        = $this->model_extension_payment_paylike->getTransactions($filter_data);
+        $result['transaction_currency'] = strtoupper($result['transaction_currency']);
 
         foreach ($results as $result) {
             $order_amount       = $this->getAmountsFromPaylikeAmount($result['order_amount'], $result['transaction_currency']);
@@ -673,7 +674,7 @@ class ControllerExtensionPaymentPaylike extends Controller
 
         $history = $this->model_extension_payment_paylike->getLastTransaction($ref);
         $history['transaction_currency'] = strtoupper($history['transaction_currency']);
-        
+
         if (is_null($history)) {
             $json['error'] = $this->language->get('error_message');
 
@@ -701,7 +702,7 @@ class ControllerExtensionPaymentPaylike extends Controller
 
         if ($trans_data['transaction']['currency'] != $history['transaction_currency']) {
             if ($log) {
-                $this->logger->write('Error: Capture currency (' . $history['transaction_currency'] . ') not equal to Transaction currency (' . $trans_data['transaction']['currency'] . '). Transactiion aborted!');
+                $this->logger->write('Error: Capture currency (' . $history['transaction_currency'] . ') not equal to Transaction currency (' . $trans_data['transaction']['currency'] . '). Transaction aborted!');
             }
             $json['error'] = $this->language->get('error_transaction_currency');
             ;

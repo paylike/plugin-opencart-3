@@ -23,7 +23,7 @@
 
 	  paylike.popup({
 	    title: "<?php echo $popup_title; ?>",
-	    currency: '<?php echo $currency_code; ?>',
+	    currency: '<?php echo strtoupper($currency_code); ?>',
 	    description: "<?php echo $popup_description; ?>",
 	    amount: <?php echo $amount; ?>,
 	    locale: '<?php echo $lc; ?>',

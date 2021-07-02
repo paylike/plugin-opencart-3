@@ -144,20 +144,20 @@
                                                     <li><a href="javascript:;" data-type="Capture"
                                                                 data-ref="<?php echo $trans['transaction_id']; ?>"
                                                                 data-amount="<?php echo $trans['allowed_capture']; ?>"
-                                                                data-currency="<?php echo $trans['currency']; ?>"><i
+                                                                data-currency="<?php echo strtoupper($trans['currency']); ?>"><i
                                                                     class="fa fa-pencil"></i> <?php echo $button_capture; ?>
                                                         </a></li>
                                                     <li><a href="javascript:;" data-type="Void"
                                                                 data-ref="<?php echo $trans['transaction_id']; ?>"
                                                                 data-amount="<?php echo $trans['allowed_capture']; ?>"
-                                                                data-currency="<?php echo $trans['currency']; ?>"><i
+                                                                data-currency="<?php echo strtoupper($trans['currency']); ?>"><i
                                                                     class="fa fa-trash-o"></i> <?php echo $button_void; ?>
                                                         </a></li>
                                                     <?php } else{ ?>
                                                     <li><a href="javascript:;" data-type="Refund"
                                                                 data-ref="<?php echo $trans['transaction_id']; ?>"
                                                                 data-amount="<?php echo $trans['allowed_refund']; ?>"
-                                                                data-currency="<?php echo $trans['currency']; ?>"><i
+                                                                data-currency="<?php echo strtoupper($trans['currency']); ?>"><i
                                                                     class="fa fa-trash-o"></i> <?php echo $button_refund; ?>
                                                         </a></li>
 

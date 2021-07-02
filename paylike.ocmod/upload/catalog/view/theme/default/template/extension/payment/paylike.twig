@@ -23,7 +23,7 @@
 
 	  paylike.popup({
 	    title: "{{ popup_title }}",
-	    currency: '{{ currency_code }}',
+	    currency: '{{ currency_code|upper }}',
 	    description: "{{ popup_description }}",
 	    amount: {{ amount }},
 	    locale: '{{ lc }}',
