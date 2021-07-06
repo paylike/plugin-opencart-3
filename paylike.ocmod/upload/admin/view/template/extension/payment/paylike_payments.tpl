@@ -63,8 +63,8 @@
                                         placeholder="<?php echo $entry_date_added; ?>" data-date-format="YYYY-MM-DD"
                                         id="input_date_added" class="form-control"/>
                                 <span class="input-group-btn">
-								<button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
-							</span>
+                                <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                            </span>
                             </div>
                         </div>
                         <div class="form-group text-right">

@@ -5,7 +5,7 @@ You can sign up for a Paylike account at [https://paylike.io](https://paylike.io
 ## Getting an API key
 
 An API key can be obtained by creating a merchant and adding an app through
-Paylike [dashboard](https://app.paylike.io). 
+Paylike [dashboard](https://app.paylike.io).
 
 ## Requirements
 
@@ -31,34 +31,34 @@ The bindings require the following extension in order to work properly:
 
 - [`curl`](https://secure.php.net/manual/en/book.curl.php)
 
-If you use Composer, these dependencies should be handled automatically. If you install manually, you'll want to make sure that these extensions are available.  
+If you use Composer, these dependencies should be handled automatically. If you install manually, you'll want to make sure that these extensions are available.
 If you don't want to use curl, you can create your own client to extend from `HttpClientInterface` and send that as a parameter when instantiating the `Paylike` class.
 
 ## Example
 
 ```php
 $paylike = new \Paylike\Paylike($private_api_key);
- 
+
 // fetch a card
 $cards = $paylike->cards();
 $card  = $cards->fetch($card_id);
- 
+
 // capture a transaction
 $transactions = $paylike->transactions();
 $transaction  = $transactions->capture($transaction_id, array(
     'amount'   => 100,
     'currency' => 'EUR'
 ));
-``` 
+```
 
 ## Methods
 ```php
 $paylike = new \Paylike\Paylike($private_api_key);
- 
+
 $apps = $paylike->apps();
 $apps->create($args);
 $apps->fetch();
- 
+
 $merchants = $paylike->merchants();
 $merchants->create($args);
 $merchants->fetch($merchant_id);
@@ -66,11 +66,11 @@ $merchants->update($merchant_id, $args);
 $all_merchants = $merchants->find($app_id,$args);
 $some_merchants = $merchants->before($app_id,$before);
 $some_merchants = $merchants->after($app_id,$before);
- 
+
 $cards = $paylike->cards();
 $cards->create($merchant_id, $args);
 $cards->fetch($card_id);
- 
+
 $transactions = $paylike->transactions();
 $transactions->create($merchant_id, $args);
 $transactions->fetch($transaction_id);
@@ -90,10 +90,10 @@ $api_transactions = $transactions->find($merchant_id, array(
     'after' => $after,
     'before' => $before,
     'filter' => array(
-    	'successful' => true
+        'successful' => true
     )
 ));
-``` 
+```
 
 ## Pagination
 The methods that return multiple merchants/transactions (find,after,before) use cursors, so you don't need to worry about pagination, you can access any index, or iterate all the items, this is handled in the background.
@@ -126,7 +126,7 @@ try {
 } catch (\Paylike\Exception\ApiException $e) {
     // Unknown api error
 }
-``` 
+```
 
 In most cases catching `NotFound` and `InvalidRequest` as client errors
 and logging `ApiException` would suffice.
@@ -146,4 +146,3 @@ Install dependencies as mentioned above (which will resolve [PHPUnit](http://pac
 ```bash
 ./vendor/bin/phpunit
 ```
- 
