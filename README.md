@@ -36,14 +36,38 @@ Under the extension settings, you can:
  * Update the title that shows up in the payment popup
  * Add test/live keys
  * Set payment mode (test/live)
- * Change the capture type (Instant/Manual via Paylike Tool)
+ * Change the capture type (Instant/Delayed via Paylike Tool)
  * Change the order statuses that the orders will get after a certain payment action is done (void/refund/capture/authorization)
 
  ## How to capture / manage transactions
 
-  The transactions will show up under paylike payments (admin/index.php?route=extension/payment/paylike/payments) and they can be reached by clicking the green button at the top of the extension settings page. Here you can see refund/void and capture transactions depending on their status.
+  The transactions will show up under Paylike payments (admin/index.php?route=extension/payment/paylike/payments) and they can be reached by clicking the green button at the top right of the extension settings page. Here you can see refund/void and capture transactions depending on their status.
+
+1. Capture
+    * In Instant mode, the orders are captured automatically
+    * In Delayed mode you can do this in admin panel at YOUR_DOMAIN_URL/admin/index.php?route=extension/payment/paylike/payments in Action section in the table.
+2. Refund
+    * To Refund an order you can do this in admin panel at YOUR_DOMAIN_URL/admin/index.php?route=extension/payment/paylike/payments in Action section in the table.
+3. Void
+    * To Void an order you can do this in admin panel at YOUR_DOMAIN_URL/admin/index.php?route=extension/payment/paylike/payments in Action section in the table.
+
+## Available features
+
+1. Capture
+   * Opencart admin panel: full capture
+   * Paylike admin panel: full/partial capture
+2. Refund
+   * Opencart admin panel: full/partial refund
+   * Paylike admin panel: full/partial refund
+3. Void
+   * Opencart admin panel: full void
+   * Paylike admin panel: full/partial void
 
 ## Changelog
+
+#### 1.2.0:
+* Updated js SDK version to 10.js
+* Updated logic to work with SDK v10 version
 
 #### 1.1.1:
 * Added logic to convert currency code to uppercase

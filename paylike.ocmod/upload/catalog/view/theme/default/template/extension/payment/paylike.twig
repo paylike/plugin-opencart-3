@@ -7,11 +7,12 @@
     <input type="button" value="{{ button_confirm }}" id="button-confirm" class="btn btn-primary" />
   </div>
 </div>
-<script type="text/javascript" src="https://sdk.paylike.io/6.js"></script>
+<script type="text/javascript" src="https://sdk.paylike.io/10.js"></script>
 <script type="text/javascript"><!--
     $('#button-confirm').on('click', function() {
       $('.paylikealert').remove();
-      var paylike = Paylike('{{ paylike_public_key }}');
+
+      var paylike = Paylike({key: '{{ paylike_public_key }}'});
 
         /* Integration with Journal 3 Theme - One Page Checkout
          * Disable preloader if is defined
@@ -21,20 +22,24 @@
         triggerLoadingOff();
       } catch (error) {}
 
-      paylike.popup({
-        title: "{{ popup_title }}",
-        currency: '{{ currency_code|upper }}',
-        description: "{{ popup_description }}",
-        amount: {{ amount }},
+      paylike.pay({
+        test: ('live' === '{{ active_mode }}') ? (false) : (true),
+        title: '{{ popup_title }}',
+        description: '{{ popup_description }}',
+        amount: {
+          currency: '{{ currency_code|upper }}',
+          exponent: {{ exponent }},
+          value: {{ amount }}
+        },
         locale: '{{ lc }}',
         custom: {
           orderId: '{{ order_id }}',
           products: {{ products }},
           customer: {
-            name: "{{ name }}",
+            name: '{{ name }}',
             email: '{{ email }}',
             phoneNo: '{{ telephone }}',
-            address: "{{ address }}",
+            address: '{{ address }}',
             IP: '{{ ip }}'
           },
           platform: {

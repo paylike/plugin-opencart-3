@@ -7,11 +7,12 @@
     <input type="button" value="<?php echo $button_confirm; ?>" id="button-confirm" class="btn btn-primary" />
   </div>
 </div>
-<script type="text/javascript" src="https://sdk.paylike.io/6.js"></script>
+<script type="text/javascript" src="https://sdk.paylike.io/10.js"></script>
 <script type="text/javascript"><!--
     $('#button-confirm').on('click', function() {
       $('.paylikealert').remove();
-      var paylike = Paylike('<?php echo $paylike_public_key; ?>');
+
+      var paylike = Paylike({key: '<?php echo $paylike_public_key; ?>'});
 
       /* Integration with Journal 3 Theme - One Page Checkout
          * Disable preloader if is defined
@@ -21,20 +22,24 @@
         triggerLoadingOff();
       } catch (error) {}
 
-      paylike.popup({
-        title: "<?php echo $popup_title; ?>",
-        currency: '<?php echo strtoupper($currency_code); ?>',
-        description: "<?php echo $popup_description; ?>",
-        amount: <?php echo $amount; ?>,
+      paylike.pay({
+        test: ('live' === '<?php echo $active_mode; ?>') ? (false) : (true),
+        title: '<?php echo $popup_title; ?>',
+        description: '<?php echo $popup_description; ?>',
+        amount: {
+          currency: '<?php echo strtoupper($currency_code); ?>',
+          exponent: <?php echo $exponent; ?>,
+          value: <?php echo $amount; ?>
+        },
         locale: '<?php echo $lc; ?>',
         custom: {
           orderId: '<?php echo $order_id; ?>',
           products: <?php echo $products; ?>,
           customer: {
-            name: "<?php echo $name; ?>",
+            name: '<?php echo $name; ?>',
             email: '<?php echo $email; ?>',
             phoneNo: '<?php echo $telephone; ?>',
-            address: "<?php echo $address; ?>",
+            address: '<?php echo $address; ?>',
             IP: '<?php echo $ip; ?>'
           },
           platform: {
