@@ -28,7 +28,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $data['mode']           = $this->config->get('payment_paylike_checkout_display_mode');
 
         $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-        $order_info['currency_code'] = strtoupper($order_info['currency_code'])
+        $order_info['currency_code'] = strtoupper($order_info['currency_code']);
 
         $data['order_id']  = $this->session->data['order_id'];
         $data['name']      = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
