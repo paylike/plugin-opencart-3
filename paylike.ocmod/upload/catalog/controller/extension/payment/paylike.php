@@ -7,7 +7,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $this->load->language('extension/payment/paylike');
         $this->load->model('extension/payment/paylike');
         $this->load->model('checkout/order');
-        $data['plugin_version'] = '1.1.0';
+        $data['plugin_version'] = '1.2.0';
         $data['VERSION'] = VERSION;
         $data['active_mode']=$this->config->get('payment_paylike_api_mode');
 
@@ -28,6 +28,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $data['mode']           = $this->config->get('payment_paylike_checkout_display_mode');
 
         $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+        $order_info['currency_code'] = strtoupper($order_info['currency_code'])
 
         $data['order_id']  = $this->session->data['order_id'];
         $data['name']      = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
@@ -43,6 +44,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $amount                = $this->getAmountsFromOrderAmount($order_info['total'], $order_info['currency_code']);
         $data['amount']        = $amount['paylike'];
         $data['currency_code'] = $order_info['currency_code'];
+        $data['exponent'] = $this->getExponentValueFromCurrencyCode($order_info['currency_code']);
 
         $products       = $this->cart->getProducts();
         $products_array = array();
@@ -106,7 +108,8 @@ class ControllerExtensionPaymentPaylike extends Controller
 
         $this->load->model('checkout/order');
         $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-        $amount     = $this->getAmountsFromOrderAmount($order_info['total'], $order_info['currency_code']);
+        $order_info['currency_code'] = strtoupper($order_info['currency_code']);
+        $amount = $this->getAmountsFromOrderAmount($order_info['total'], $order_info['currency_code']);
 
         $trans_data = Paylike\Transaction::fetch($ref);
 
@@ -136,7 +139,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         }
 
         if (isset($trans_data['transaction'])) {
-            if (isset($trans_data['transaction']['successful']) && $trans_data['transaction']['currency'] == $order_info['currency_code'] && $trans_data['transaction']['amount'] == $amount['paylike']) {
+            if (isset($trans_data['transaction']['successful']) && (strtoUpper($trans_data['transaction']['currency']) == $order_info['currency_code']) && ($trans_data['transaction']['amount'] == $amount['paylike'])) {
                 $order_captured = false;
 
                 if ($this->config->get('payment_paylike_capture_mode') == 'instant') {
@@ -196,6 +199,23 @@ class ControllerExtensionPaymentPaylike extends Controller
 
     private function getAmountsFromOrderAmount($order_amount, $currency_code)
     {
+        $exponent = $this->getExponentValueFromCurrencyCode($currency_code);
+
+        $multiplier = pow(10, $exponent);
+        $amount     = array();
+
+        $amount['order_amount']      = $order_amount;
+        $amount['store_converted']   = $this->currency->format($amount['order_amount'], $currency_code, false, false);
+        $amount['store_formatted']   = $this->currency->format($amount['order_amount'], $currency_code, false, true);
+        $amount['paylike']           = ceil($amount['store_converted'] * $multiplier);
+        $amount['paylike_converted'] = $this->currency->format($amount['paylike'] / $multiplier, $currency_code, 1, false);
+        $amount['paylike_formatted'] = $this->currency->format($amount['paylike'] / $multiplier, $currency_code, 1, true);
+
+        return $amount;
+    }
+
+    private function getExponentValueFromCurrencyCode($currency_code)
+    {
         $exponent_zero  = array(
             'BIF',
             'BYR',
@@ -212,24 +232,17 @@ class ControllerExtensionPaymentPaylike extends Controller
             'XOF',
             'XPF'
         );
-        $exponent_three = array( 'BHD', 'IQD', 'JOD', 'KWD', 'OMR', 'TND' );
+
+        $exponent_three = array('BHD', 'IQD', 'JOD', 'KWD', 'OMR', 'TND');
+
         $exponent       = 2;
+
         if (in_array($currency_code, $exponent_zero)) {
             $exponent = 0;
         } elseif (in_array($currency_code, $exponent_three)) {
             $exponent = 3;
         }
 
-        $multiplier = pow(10, $exponent);
-        $amount     = array();
-
-        $amount['order_amount']      = $order_amount;
-        $amount['store_converted']   = $this->currency->format($amount['order_amount'], $currency_code, false, false);
-        $amount['store_formatted']   = $this->currency->format($amount['order_amount'], $currency_code, false, true);
-        $amount['paylike']           = ceil($amount['store_converted'] * $multiplier);
-        $amount['paylike_converted'] = $this->currency->format($amount['paylike'] / $multiplier, $currency_code, 1, false);
-        $amount['paylike_formatted'] = $this->currency->format($amount['paylike'] / $multiplier, $currency_code, 1, true);
-
-        return $amount;
+        return $exponent;
     }
 }

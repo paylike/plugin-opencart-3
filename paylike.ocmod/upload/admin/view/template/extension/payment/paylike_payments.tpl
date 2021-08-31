@@ -63,8 +63,8 @@
                                         placeholder="<?php echo $entry_date_added; ?>" data-date-format="YYYY-MM-DD"
                                         id="input_date_added" class="form-control"/>
                                 <span class="input-group-btn">
-								<button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
-							</span>
+                                <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                            </span>
                             </div>
                         </div>
                         <div class="form-group text-right">
@@ -144,20 +144,20 @@
                                                     <li><a href="javascript:;" data-type="Capture"
                                                                 data-ref="<?php echo $trans['transaction_id']; ?>"
                                                                 data-amount="<?php echo $trans['allowed_capture']; ?>"
-                                                                data-currency="<?php echo $trans['currency']; ?>"><i
+                                                                data-currency="<?php echo strtoupper($trans['currency']); ?>"><i
                                                                     class="fa fa-pencil"></i> <?php echo $button_capture; ?>
                                                         </a></li>
                                                     <li><a href="javascript:;" data-type="Void"
                                                                 data-ref="<?php echo $trans['transaction_id']; ?>"
                                                                 data-amount="<?php echo $trans['allowed_capture']; ?>"
-                                                                data-currency="<?php echo $trans['currency']; ?>"><i
+                                                                data-currency="<?php echo strtoupper($trans['currency']); ?>"><i
                                                                     class="fa fa-trash-o"></i> <?php echo $button_void; ?>
                                                         </a></li>
                                                     <?php } else{ ?>
                                                     <li><a href="javascript:;" data-type="Refund"
                                                                 data-ref="<?php echo $trans['transaction_id']; ?>"
                                                                 data-amount="<?php echo $trans['allowed_refund']; ?>"
-                                                                data-currency="<?php echo $trans['currency']; ?>"><i
+                                                                data-currency="<?php echo strtoupper($trans['currency']); ?>"><i
                                                                     class="fa fa-trash-o"></i> <?php echo $button_refund; ?>
                                                         </a></li>
 
