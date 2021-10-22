@@ -43,12 +43,20 @@ Under the extension settings, you can:
 
   The transactions will show up under Paylike payments (admin/index.php?route=extension/payment/paylike/payments) and they can be reached by clicking the green button at the top right of the extension settings page. Here you can see refund/void and capture transactions depending on their status.
 
+  In Delayed mode you can do transactions (full capture, refund, void) from admin panel, for each order info page, adding a history to the order. The `Order Status` that is wanted to be set for specific transaction must  be identical with that set in Paylike extension page (Advanced section/tab). By default it is `Completed` for capture, `Refunded` for refund and `Voided` for void an order.
+
 1. Capture
     * In Instant mode, the orders are captured automatically
+    * In Delayed mode you can do this in admin panel, order info page, adding `Completed` order status history to the order.
+    * OR
     * In Delayed mode you can do this in admin panel at YOUR_DOMAIN_URL/admin/index.php?route=extension/payment/paylike/payments in Action section in the table.
 2. Refund
+    * In Delayed mode you can do this in admin panel, order info page, adding `Refunded` order status history to the order.
+    * OR
     * To Refund an order you can do this in admin panel at YOUR_DOMAIN_URL/admin/index.php?route=extension/payment/paylike/payments in Action section in the table.
 3. Void
+    * In Delayed mode you can do this in admin panel, order info page, adding `Voided` order status history to the order.
+    * OR
     * To Void an order you can do this in admin panel at YOUR_DOMAIN_URL/admin/index.php?route=extension/payment/paylike/payments in Action section in the table.
 
 ## Available features
@@ -57,13 +65,16 @@ Under the extension settings, you can:
    * Opencart admin panel: full capture
    * Paylike admin panel: full/partial capture
 2. Refund
-   * Opencart admin panel: full/partial refund
+   * Opencart admin panel: full/partial refund (only full refund from order view page)
    * Paylike admin panel: full/partial refund
 3. Void
    * Opencart admin panel: full void
    * Paylike admin panel: full/partial void
 
 ## Changelog
+
+#### 1.3.0:
+* Added logic to make a transaction on order status change (admin panel)
 
 #### 1.2.0:
 * Updated js SDK version to 10.js
