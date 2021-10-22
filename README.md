@@ -41,7 +41,7 @@ Under the extension settings, you can:
 
  ## How to capture / manage transactions
 
-  The transactions will show up under Paylike payments (admin/index.php?route=extension/payment/paylike/payments) and they can be reached by clicking the green button at the top right of the extension settings page. Here you can see refund/void and capture transactions depending on their status.
+  The transactions will show up under `Sales -> Paylike Payments` side menu. Here you can see capture/refund/void transactions depending on their status. Alternatively Paylike payments can be accesed from SITE_URL/admin/index.php?route=extension/payment/paylike/payments and they can be reached by clicking the green button at the top right of the extension settings page
 
   In Delayed mode you can do transactions (full capture, refund, void) from admin panel, for each order info page, adding a history to the order. The `Order Status` that is wanted to be set for specific transaction must  be identical with that set in Paylike extension page (Advanced section/tab). By default it is `Completed` for capture, `Refunded` for refund and `Voided` for void an order.
 
