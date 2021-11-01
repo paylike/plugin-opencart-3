@@ -33,13 +33,39 @@ class ModelExtensionPaymentPaylike extends Model
          `date_added` datetime NOT NULL,
          PRIMARY KEY (`paylike_transaction_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        
+        $this->addEvents();
     }
 
     public function uninstall()
     {
         // $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paylike_transaction`");
+        
+        $this->deleteEvents();
+    }
+    
+    /********************************* EVENTS ADD/DELETE BEGIN *************************************/
+    public function addEvents()
+    {
+        $this->load->model('setting/event');
+
+        /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
+        $this->model_setting_event->addEvent(
+            'paylike_do_transaction_on_order_status_change',
+            'catalog/controller/api/order/history/after',
+            'extension/payment/paylike_transaction/doTransactionOnOrderStatusChange'
+        );
     }
 
+    public function deleteEvents()
+    {
+        $this->load->model('setting/event');
+        /** deleteEventByCode($code); */
+        $this->model_setting_event->deleteEventByCode('paylike_do_transaction_on_order_status_change');
+    }
+    /********************************* EVENTS ADD/DELETE END *************************************/
+    
+    
     public function upgrade()
     {
         if (!is_null($this->config->get('paylike_payment_method_title'))) {
