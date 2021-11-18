@@ -537,9 +537,9 @@ class ControllerExtensionPaymentPaylike extends Controller
         $data['transactions']           = array();
         $transactions_total             = $this->model_extension_payment_paylike->getTotalTransactions($filter_data);
         $results                        = $this->model_extension_payment_paylike->getTransactions($filter_data);
-        $result['transaction_currency'] = strtoupper($result['transaction_currency']);
 
         foreach ($results as $result) {
+            $result['transaction_currency'] = strtoupper($result['transaction_currency']);
             $order_amount       = $this->getAmountsFromPaylikeAmount($result['order_amount'], $result['transaction_currency']);
             $transaction_amount = $this->getAmountsFromPaylikeAmount($result['transaction_amount'], $result['transaction_currency']);
             $total_amount       = $this->getAmountsFromPaylikeAmount($result['total_amount'], $result['transaction_currency']);
