@@ -2,22 +2,6 @@
 
 class ModelExtensionPaymentPaylike extends Model
 {
-
-    public function getCcLogos()
-    {
-        return array(
-            array ( 'name' => 'Mastercard', 'logo' => 'mastercard.png' ),
-            array ( 'name' => 'Mastercard Maestro', 'logo' => 'maestro.png' ),
-            array ( 'name' => 'Visa', 'logo' => 'visa.png' ),
-            array ( 'name' => 'Visa Electron', 'logo' => 'visaelectron.png' ),
-        );
-    }
-
-    public function getTransactionTypes()
-    {
-        return array( 'Authorize', 'Capture', 'Refund', 'Void' );
-    }
-
     public function install()
     {
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paylike_transaction` (
@@ -33,17 +17,17 @@ class ModelExtensionPaymentPaylike extends Model
          `date_added` datetime NOT NULL,
          PRIMARY KEY (`paylike_transaction_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        
+
         $this->addEvents();
     }
 
     public function uninstall()
     {
         // $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paylike_transaction`");
-        
+
         $this->deleteEvents();
     }
-    
+
     /********************************* EVENTS ADD/DELETE BEGIN *************************************/
     public function addEvents()
     {
@@ -52,7 +36,7 @@ class ModelExtensionPaymentPaylike extends Model
         /** Make sure that the event is introduce only once in DB. */
         /** deleteEventByCode($code); */
         $this->model_setting_event->deleteEventByCode('paylike_do_transaction_on_order_status_change');
-        
+
         /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
         $this->model_setting_event->addEvent(
             'paylike_do_transaction_on_order_status_change',
@@ -68,10 +52,15 @@ class ModelExtensionPaymentPaylike extends Model
         $this->model_setting_event->deleteEventByCode('paylike_do_transaction_on_order_status_change');
     }
     /********************************* EVENTS ADD/DELETE END *************************************/
-    
-    
+
+
     public function upgrade()
     {
+        if (!is_null($this->config->get('paylike_status'))) {
+            $val = $this->config->get('paylike_status');
+            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_status', $val);
+            $this->config->set('payment_paylike_status', $val);
+        }
         if (!is_null($this->config->get('paylike_payment_method_title'))) {
             $val = $this->config->get('paylike_payment_method_title');
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_method_title', $val);
@@ -112,11 +101,6 @@ class ModelExtensionPaymentPaylike extends Model
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_app_key_live', $val);
             $this->config->set('payment_paylike_app_key_live', $val);
         }
-        if (!is_null($this->config->get('paylike_total'))) {
-            $val = $this->config->get('paylike_total');
-            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_minimum_total', $val);
-            $this->config->set('payment_paylike_minimum_total', $val);
-        }
         if (!is_null($this->config->get('paylike_capture'))) {
             $val = $this->config->get('paylike_capture');
             if ($val == '1') {
@@ -127,22 +111,21 @@ class ModelExtensionPaymentPaylike extends Model
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_capture_mode', $val);
             $this->config->set('payment_paylike_capture_mode', $val);
         }
+        if (!is_null($this->config->get('paylike_total'))) {
+            $val = $this->config->get('paylike_total');
+            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_minimum_total', $val);
+            $this->config->set('payment_paylike_minimum_total', $val);
+        }
         if (!is_null($this->config->get('paylike_geo_zone_id'))) {
             $val = $this->config->get('paylike_geo_zone_id');
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_geo_zone', $val);
             $this->config->set('payment_paylike_geo_zone', $val);
-        }
-        if (!is_null($this->config->get('paylike_status'))) {
-            $val = $this->config->get('paylike_status');
-            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_status', $val);
-            $this->config->set('payment_paylike_status', $val);
         }
         if (!is_null($this->config->get('paylike_sort_order'))) {
             $val = $this->config->get('paylike_sort_order');
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_sort_order', $val);
             $this->config->set('payment_paylike_sort_order', $val);
         }
-
 
         $query = $this->db->query("SELECT p.order_id, p.trans_id, p.amount, p.captured, o.currency_code, o.date_added FROM `" . DB_PREFIX . "paylike_admin` AS p LEFT JOIN `" . DB_PREFIX . "order` AS o ON p.order_id = o.order_id");
         if ($query->num_rows > 0) {
@@ -175,6 +158,21 @@ class ModelExtensionPaymentPaylike extends Model
         if (is_file($vqmodfile)) {
             unlink($vqmodfile);
         }
+    }
+
+    public function getCcLogos()
+    {
+        return array(
+            array ( 'name' => 'Mastercard', 'logo' => 'mastercard.png' ),
+            array ( 'name' => 'Mastercard Maestro', 'logo' => 'maestro.png' ),
+            array ( 'name' => 'Visa', 'logo' => 'visa.png' ),
+            array ( 'name' => 'Visa Electron', 'logo' => 'visaelectron.png' ),
+        );
+    }
+
+    public function getTransactionTypes()
+    {
+        return array( 'Authorize', 'Capture', 'Refund', 'Void' );
     }
 
     public function getTotalTransactions()
