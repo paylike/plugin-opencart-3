@@ -34,15 +34,14 @@ class ModelExtensionPaymentPaylike extends Model
         $this->load->model('setting/event');
 
         /** Make sure that the event is introduce only once in DB. */
-        /** deleteEventByCode($code); */
-        $this->model_setting_event->deleteEventByCode('paylike_do_transaction_on_order_status_change');
-
-        /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
-        $this->model_setting_event->addEvent(
-            'paylike_do_transaction_on_order_status_change',
-            'catalog/controller/api/order/history/after',
-            'extension/payment/paylike_transaction/doTransactionOnOrderStatusChange'
-        );
+        if(0 == $this->model_setting_event->getEventByCode('paylike_do_transaction_on_order_status_change')) {
+            /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
+            $this->model_setting_event->addEvent(
+                'paylike_do_transaction_on_order_status_change',
+                'catalog/controller/api/order/history/after',
+                'extension/payment/paylike_transaction/doTransactionOnOrderStatusChange'
+            );
+        }
     }
 
     public function deleteEvents()
@@ -147,7 +146,17 @@ class ModelExtensionPaymentPaylike extends Model
                         $transaction_amount = 0;
                         $total_amount = 0;
                     }
-                    $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction` SET order_id = '" . $row['order_id'] . "', transaction_id = '" . $row['trans_id'] . "', transaction_type = '" . $transaction_type . "', transaction_currency = '" . strtoupper($row['currency_code']) . "', order_amount = '" . $order_amount . "', transaction_amount = '" . $transaction_amount . "', total_amount = '" . $total_amount . "', history = '0', date_added = '" . $row['date_added'] . "'");
+                    $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction`
+                                      SET order_id = '" . $row['order_id'] . "',
+                                          transaction_id = '" . $row['trans_id'] . "',
+                                          transaction_type = '" . $transaction_type . "',
+                                          transaction_currency = '" . strtoupper($row['currency_code']) . "',
+                                          order_amount = '" . $order_amount . "',
+                                          transaction_amount = '" . $transaction_amount . "',
+                                          total_amount = '" . $total_amount . "',
+                                          history = '0',
+                                          date_added = '" . $row['date_added'] . "'"
+                                    );
                 }
             }
         }
