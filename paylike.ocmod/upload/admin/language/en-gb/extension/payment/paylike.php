@@ -6,7 +6,7 @@ $_['text_paylike']  = '<a target="_BLANK" href="https://paylike.io"><img src="vi
 $_['text_description']             = 'Paylike enables you to accept credit and debit cards on your OpenCart platform. If you don\'t already have an account with Paylike, you can create it at https://paylike.io. Need help with the setup? Read our documentation at https://paylike.io/plugins/opencart-2.3';
 $_['text_extension']               = 'Extensions';
 $_['text_edit_settings']           = 'Edit Paylike';
-$_['text_paylike_version']         = '1.3.0';
+$_['text_paylike_version']         = '1.4.0';
 $_['text_general_settings']        = 'General';
 $_['text_advanced_settings']       = 'Advanced';
 $_['text_capture_instant']         = 'Instant';

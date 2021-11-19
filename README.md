@@ -28,18 +28,21 @@ Once you have installed OpenCart, follow these simple steps:
 1. Upload the paylike.ocmod.zip file in the extensions uploader.
 1. Log in as administrator and click  "Extensions" from the top menu then "extension" then "payments" and install the Paylike plugin by clicking the `Install` link listed there.
 1. Click the Edit Paylike button
+1. Select a store for your configuration
 1. Add the Public and App key that you can find in your Paylike account and enable the plugin
+1. Save the settings
 
 ## Updating settings
 
 Under the extension settings, you can:
+ * Choose the OpenCart (sub)store to make settings for
  * Update the payment method text in the payment gateways list
  * Update the payment method description in the payment gateways list
  * Update the title that shows up in the payment popup
  * Add test/live keys
  * Set payment mode (test/live)
- * Change the capture type (Instant/Delayed via Paylike Tool)
- * Change the order statuses that the orders will get after a certain payment action is done (void/refund/capture/authorization)
+ * Change the capture type (Instant/Delayed)
+ * Change the order statuses that the orders will get after a certain payment action is done (authorization/capture/refund/void)
 
  ## How to capture / manage transactions
 
@@ -74,6 +77,9 @@ Under the extension settings, you can:
    * Paylike admin panel: full/partial void
 
 ## Changelog
+
+#### 1.4.0:
+* Added multistore support
 
 #### 1.3.0:
 * Added logic to make a transaction on order status change (admin panel)
