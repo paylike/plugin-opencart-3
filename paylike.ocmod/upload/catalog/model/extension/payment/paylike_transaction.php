@@ -2,34 +2,6 @@
 
 class ModelExtensionPaymentPaylikeTransaction extends Model
 {
-    public function getTotalTransactions()
-    {
-        $sql = "SELECT COUNT(order_id) AS total FROM `" . DB_PREFIX . "paylike_transaction` WHERE history = '0'";
-
-        if (!empty($data['filter_order_id'])) {
-            $sql .= " AND order_id = '" . (int)$data['filter_order_id'] . "'";
-        } else {
-            $sql .= " AND order_id > 0";
-        }
-
-        if (!empty($data['filter_transaction_id'])) {
-            $sql .= " AND transaction_id = '" . $data['transaction_id'] . "'";
-        }
-
-        if (!empty($data['filter_transaction_type'])) {
-            $sql .= " AND transaction_type = '" . $data['filter_transaction_type'] . "'";
-        }
-
-        if (!empty($data['filter_date_added'])) {
-            $sql .= " AND DATE(date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
-        }
-
-        $query = $this->db->query($sql);
-
-        return $query->row['total'];
-    }
-
-
     public function getTransactions($data = array())
     {
         $sql = "SELECT * FROM `" . DB_PREFIX . "paylike_transaction` WHERE history = '0'";
@@ -89,13 +61,25 @@ class ModelExtensionPaymentPaylikeTransaction extends Model
     }
 
 
-    public function getLastTransaction($ref)
+    /**
+     * GET last Paylike transaction by query data parameters
+     */
+    public function getLastPaylikeTransaction($orderId)
     {
-        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paylike_transaction` WHERE transaction_id = '" . $ref . "' ORDER BY paylike_transaction_id DESC LIMIT 1");
-        return $query->row;
+        $paylikeTransaction = $this->db->query("SELECT *
+                                    FROM `" . DB_PREFIX . "paylike_transaction`
+                                    WHERE order_id = '" . $orderId . "'
+                                    ORDER BY paylike_transaction_id
+                                    DESC
+                                    LIMIT 1"
+                                );
+
+        return $paylikeTransaction->row;
     }
 
-
+    /**
+     * ADD transaction in paylike_transaction table
+     */
     public function addTransaction($data)
     {
         $this->db->query("UPDATE `" . DB_PREFIX . "paylike_transaction`
@@ -117,7 +101,10 @@ class ModelExtensionPaymentPaylikeTransaction extends Model
                         );
     }
 
-    
+
+    /**
+     * UPDATE order
+     */
     public function updateOrder($data, $new_order_status_id)
     {
         if ($new_order_status_id > 0) {
@@ -143,4 +130,17 @@ class ModelExtensionPaymentPaylikeTransaction extends Model
                             );
         }
     }
+
+    /**
+     * Get paylike settings selected by store id.
+     */
+    public function getPaylikeSettingsData($storeId)
+    {
+        /** Load setting model. */
+        $this->load->model('setting/setting');
+        $settingModel = $this->model_setting_setting;
+
+        return $settingModel->getSetting('payment_paylike', $storeId);
+    }
+
 }
