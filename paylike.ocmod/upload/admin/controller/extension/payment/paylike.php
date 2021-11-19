@@ -5,7 +5,6 @@ class ControllerExtensionPaymentPaylike extends Controller
     private $oc_token = '';
     private $validationPublicKeys = array ('live'=>array(),'test'=>array());
 
-
     public function index()
     {
         $this->oc_token = version_compare(VERSION, '3.0.0.0', '>=') ? 'user_token' : $this->oc_token = 'token';
@@ -37,14 +36,21 @@ class ControllerExtensionPaymentPaylike extends Controller
         }
 
 
+        /**
+         * Check if it is POST method and update the paylike settings for specific store
+         */
         if (( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate()) {
-            $this->model_setting_setting->editSetting('payment_paylike', $this->request->post);
+
+            /** Get store ID & Update selected store settings for paylike module. */
+            $selectedStoreId = $this->request->post['payment_paylike_selected_store'];
+            $this->model_setting_setting->editSetting('payment_paylike', $this->request->post, $selectedStoreId);
+
             if (version_compare(VERSION, '3.0.0.0', '>=')) {
                 $redirect_url = $this->url->link('marketplace/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
             } else {
                 $this->request->post['paylike_status']     = $this->request->post['payment_paylike_status'];
                 $this->request->post['paylike_sort_order'] = $this->request->post['payment_paylike_sort_order'];
-                $this->model_setting_setting->editSetting('paylike', $this->request->post);
+                $this->model_setting_setting->editSetting('paylike', $this->request->post, $selectedStoreId);
                 $redirect_url = $this->url->link('extension/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
             }
 
@@ -58,7 +64,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         /** Push default store to stores array. It is not extracted with getStores(). */
         $data['stores'][] = array(
             'store_id' => 0,
-            'name'     => $this->language->get('text_default')
+            'name'     => $this->config->get('config_name') . ' ' . $this->language->get('text_default'),
         );
 
         /** Extract OpenCart stores. */
@@ -68,15 +74,6 @@ class ControllerExtensionPaymentPaylike extends Controller
                 'store_id' => $store['store_id'],
                 'name'     => $store['name']
             );
-        }
-
-        /** Check if a store was selected and get it's data. */
-        if (isset($this->request->post['payment_paylike_selected_store'])) {
-            $data['payment_paylike_selected_store'] = $this->request->post['payment_paylike_selected_store'];
-        } elseif (! is_null($this->config->get('payment_paylike_selected_store'))) {
-            $data['payment_paylike_selected_store'] = $this->config->get('payment_paylike_selected_store');
-        } else {
-            $data['payment_paylike_selected_store'] = 0; // 0 = default store ID
         }
 
 
@@ -191,6 +188,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         } else {
             $data['success'] = '';
         }
+
 
         if (isset($this->request->post['payment_paylike_method_title'])) {
             $data['payment_paylike_method_title'] = $this->request->post['payment_paylike_method_title'];
@@ -330,7 +328,6 @@ class ControllerExtensionPaymentPaylike extends Controller
         } else {
             $data['payment_paylike_sort_order'] = 0;
         }
-
 
         $data['breadcrumbs']   = array();
         $data['breadcrumbs'][] = array(
@@ -1003,4 +1000,34 @@ class ControllerExtensionPaymentPaylike extends Controller
 
         return $amount;
     }
+
+
+    /**
+     * Get Paylike settings for chosen store
+     */
+    public function get_paylike_store_settings()
+    {
+        /** Check if request is POST and store_id is set. */
+        if (('POST' == $this->request->server['REQUEST_METHOD']) && isset($this->request->post['store_id'])) {
+            $storeId = $this->request->post['store_id'];
+
+            echo json_encode($this->getPaylikeSettingsData($storeId));
+
+        } else {
+            echo '{"paylike_data_error": "Operation not allowed"}';
+        }
+    }
+
+
+    /** Get paylike settings selected by store id. */
+    private function getPaylikeSettingsData($storeId)
+    {
+        /** Load setting model. */
+        $this->load->model('setting/setting');
+        $settingModel = $this->model_setting_setting;
+
+        return $settingModel->getSetting('payment_paylike', $storeId);
+    }
+
+
 }
