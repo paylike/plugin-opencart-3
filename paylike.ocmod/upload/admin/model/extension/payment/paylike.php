@@ -52,7 +52,10 @@ class ModelExtensionPaymentPaylike extends Model
     }
     /********************************* EVENTS ADD/DELETE END *************************************/
 
-
+    /**
+     * UPGARDE Paylike transactions table
+     * from paylike_admin to paylike_transaction
+     */
     public function upgrade()
     {
         if (!is_null($this->config->get('paylike_status'))) {
@@ -169,6 +172,7 @@ class ModelExtensionPaymentPaylike extends Model
         }
     }
 
+
     public function getCcLogos()
     {
         return array(
@@ -179,12 +183,16 @@ class ModelExtensionPaymentPaylike extends Model
         );
     }
 
+
     public function getTransactionTypes()
     {
         return array( 'Authorize', 'Capture', 'Refund', 'Void' );
     }
 
-    public function getTotalTransactions()
+    /**
+     * GET total amount of Paylike transactions (filtered)
+     */
+    public function getTotalTransactions($data = array())
     {
         $sql = "SELECT COUNT(order_id) AS total FROM `" . DB_PREFIX . "paylike_transaction` WHERE history = '0'";
 
@@ -211,6 +219,9 @@ class ModelExtensionPaymentPaylike extends Model
         return $query->row['total'];
     }
 
+    /**
+     * GET Paylike transactions
+     */
     public function getTransactions($data = array())
     {
         $sql = "SELECT * FROM `" . DB_PREFIX . "paylike_transaction` WHERE history = '0'";
@@ -269,25 +280,68 @@ class ModelExtensionPaymentPaylike extends Model
         return $query->rows;
     }
 
+    /**
+     * GET last Paylike transaction by paylike_transaction_id
+     */
     public function getLastTransaction($ref)
     {
-        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paylike_transaction` WHERE transaction_id = '" . $ref . "' ORDER BY paylike_transaction_id DESC LIMIT 1");
+        $query = $this->db->query("SELECT *
+                                    FROM `" . DB_PREFIX . "paylike_transaction`
+                                    WHERE transaction_id = '" . $ref . "'
+                                    ORDER BY paylike_transaction_id
+                                    DESC
+                                    LIMIT 1"
+                                );
         return $query->row;
     }
 
+    /**
+     * ADD transaction in paylike_transaction table
+     */
     public function addTransaction($data)
     {
-        $this->db->query("UPDATE `" . DB_PREFIX . "paylike_transaction` SET history = 1 WHERE history = '0' AND transaction_id = '" . $data['transaction_id'] . "'");
-        $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction` SET order_id = '" . $data['order_id'] . "', transaction_id = '" . $data['transaction_id'] . "', transaction_type = '" . $data['transaction_type'] . "', transaction_currency = '" . $data['transaction_currency'] . "', order_amount = '" . $data['order_amount'] . "', transaction_amount = '" . $data['transaction_amount'] . "', total_amount = '" . $data['total_amount'] . "', history = '" . $data['history'] . "', date_added = '" . $data['date_added'] . "'");
+        $this->db->query("UPDATE `" . DB_PREFIX . "paylike_transaction`
+                            SET history = 1
+                            WHERE history = '0'
+                            AND transaction_id = '" . $data['transaction_id'] . "'"
+                        );
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction`
+                            SET order_id = '" . $data['order_id'] . "',
+                            transaction_id = '" . $data['transaction_id'] . "',
+                            transaction_type = '" . $data['transaction_type'] . "',
+                            transaction_currency = '" . $data['transaction_currency'] . "',
+                            order_amount = '" . $data['order_amount'] . "',
+                            transaction_amount = '" . $data['transaction_amount'] . "',
+                            total_amount = '" . $data['total_amount'] . "',
+                            history = '" . $data['history'] . "',
+                            date_added = '" . $data['date_added'] . "'"
+                        );
     }
 
+    /**
+     * UPDATE order
+     */
     public function updateOrder($data, $new_order_status_id)
     {
         if ($new_order_status_id > 0) {
-            $this->db->query("UPDATE `" . DB_PREFIX . "order` SET order_status_id = '" . $new_order_status_id . "', date_modified = NOW() WHERE order_id = '" . $data['order_id'] . "'");
+            /** Update order. */
+            $this->db->query("UPDATE `" . DB_PREFIX . "order`
+                                SET order_status_id = '" . $new_order_status_id . "',
+                                    date_modified = NOW()
+                                WHERE order_id = '" . $data['order_id'] . "'"
+                            );
+
             $comment = 'Paylike transaction: ref:' . $data['transaction_id'];
             $comment .= "\r\n" . 'Type: ' . $data['transaction_type'] . ', Amount: ' . $data['transaction_amount'] . ' ' . strtoupper($data['transaction_currency']);
-            $this->db->query("INSERT INTO " . DB_PREFIX . "order_history SET order_id = '" . $data['order_id'] . "', order_status_id = '" . $new_order_status_id . "', notify = '0', comment = '" . $this->db->escape($comment) . "', date_added = NOW()");
+
+            /** Update order history. */
+            $this->db->query("INSERT INTO " . DB_PREFIX . "order_history
+                                SET order_id = '" . $data['order_id'] . "',
+                                order_status_id = '" . $new_order_status_id . "',
+                                notify = '0',
+                                comment = '" . $this->db->escape($comment) . "',
+                                date_added = NOW()"
+                            );
         }
     }
 }
