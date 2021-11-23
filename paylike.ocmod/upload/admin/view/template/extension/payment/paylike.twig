@@ -496,8 +496,13 @@
 
             },
             error: function (jqXhr, textStatus, errorMessage) {
-                $(".select-store-dropdown-error").append("Error: " + errorMessage).addClass("text-danger");
-                console.error(errorMessage)
+                /** Check if error is of type "parsererror". This shows up when token expire. */
+                if ('parsererror' == textStatus) {
+                    location.href = 'index.php?route=extension/payment/paylike';
+                } else {
+                    $(".select-store-dropdown-error").append("Error: " + errorMessage).addClass("text-danger");
+                    console.error(errorMessage)
+                }
             }
         });
 
