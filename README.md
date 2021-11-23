@@ -35,7 +35,7 @@ Once you have installed OpenCart, follow these simple steps:
 ## Updating settings
 
 Under the extension settings, you can:
- * Choose the OpenCart (sub)store to make settings for
+ * Choose the OpenCart store to make settings for
  * Update the payment method text in the payment gateways list
  * Update the payment method description in the payment gateways list
  * Update the title that shows up in the payment popup
@@ -66,15 +66,21 @@ Under the extension settings, you can:
 
 ## Available features
 
-1. Capture
-   * Opencart admin panel: full capture
-   * Paylike admin panel: full/partial capture
-2. Refund
-   * Opencart admin panel: full/partial refund (only full refund from order view page)
-   * Paylike admin panel: full/partial refund
-3. Void
-   * Opencart admin panel: full void
-   * Paylike admin panel: full/partial void
+### Multistore support
+    - The Paylike multi-store functionality allows the merchant to have different sets of keys for each store.
+    - You need to have a single merchant account for a single store if you want to keep Paylike transactions for each store independently.
+    - But you may also have the same key sets for all stores at one time.
+
+### Transactions
+    1. Capture
+        * Opencart admin panel: full capture
+        * Paylike admin panel: full/partial capture
+    2. Refund
+        * Opencart admin panel: full/partial refund (only full refund from order view page)
+        * Paylike admin panel: full/partial refund
+    3. Void
+        * Opencart admin panel: full void
+        * Paylike admin panel: full/partial void
 
 ## Changelog
 
