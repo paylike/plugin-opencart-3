@@ -67,9 +67,8 @@ Under the extension settings, you can:
 ## Available features
 
 ### Multistore support
-    - The Paylike multi-store functionality allows the merchant to have different sets of keys for each store.
-    - You need to have a single merchant account for a single store if you want to keep Paylike transactions for each store independently.
-    - But you may also have the same key sets for all stores at one time.
+    * The Paylike multi-store functionality allows the merchant to have different sets of keys for each store.
+    * You need to have a separate merchant account for a single store to keep Paylike transactions for each store independently.
 
 ### Transactions
     1. Capture
