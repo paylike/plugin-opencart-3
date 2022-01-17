@@ -6,7 +6,7 @@ $_['text_paylike']  = '<a target="_BLANK" href="https://paylike.io"><img src="vi
 $_['text_description']             = 'Paylike enables you to accept credit and debit cards on your OpenCart platform. If you don\'t already have an account with Paylike, you can create it at https://paylike.io. Need help with the setup? Read our documentation at https://paylike.io/plugins/opencart-2.3';
 $_['text_extension']               = 'Extensions';
 $_['text_edit_settings']           = 'Edit Paylike';
-$_['text_paylike_version']         = '1.3.0';
+$_['text_paylike_version']         = '1.4.0';
 $_['text_general_settings']        = 'General';
 $_['text_advanced_settings']       = 'Advanced';
 $_['text_capture_instant']         = 'Instant';
@@ -52,6 +52,7 @@ $_['entry_minimum_total']         = 'Total';
 $_['entry_geo_zone']              = 'Geo Zone';
 $_['entry_sort_order']            = 'Sort Order';
 $_['entry_store']                 = 'Stores';
+$_['select_store']                = 'Select store';
 
 // Help
 $_['help_payment_method_title']       = 'Payment method title displayed to the customer.';
@@ -75,6 +76,7 @@ $_['help_minimum_total']              = 'The checkout total the order must reach
 $_['help_geo_zone']                   = 'Limit Paylike payment method to be available to chosen geo zone only.';
 $_['help_sort_order']                 = 'Set sort order to control how payments are displayed in checkout available payment methods.';
 $_['help_store']                      = 'Select which stores can use Paylike payment method.';
+$_['help_select_store']               = 'Select the store for which we will make the settings.';
 
 // Error
 $_['error_permission']           = 'Warning: You do not have permission to modify payment Paylike!';

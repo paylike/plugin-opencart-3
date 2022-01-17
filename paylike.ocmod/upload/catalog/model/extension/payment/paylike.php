@@ -4,22 +4,31 @@ class ModelExtensionPaymentPaylike extends Model
 {
     public function getMethod($address, $total)
     {
-
-        $query = $this->db->query("SELECT table_name FROM information_schema.tables WHERE table_schema = '" . DB_DATABASE . "' AND table_name = '" . DB_PREFIX . "paylike_admin'");
+        /** Extract database table data paylike_admin. */
+        $query = $this->db->query("SELECT table_name
+                                   FROM information_schema.tables
+                                   WHERE table_schema = '" . DB_DATABASE . "'
+                                   AND table_name = '" . DB_PREFIX . "paylike_admin'"
+                               );
+        /** Check if table was extracted. */
         if ($query->num_rows > 0) {
             return array();
         }
 
         $status         = false;
-        $allowed_stores = $this->config->get('payment_paylike_store');
-        foreach ($allowed_stores as $allowed_store) {
-            if ($allowed_store == $this->config->get('config_store_id')) {
-                $status = true;
-            }
+        $status_enabled = $this->config->get('payment_paylike_status');
+        /** Check if Paylike module status is enabled, then set status = true. */
+        if ($status_enabled) {
+            $status = true;
         }
 
         if ($status) {
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int) $this->config->get('payment_paylike_geo_zone') . "' AND country_id = '" . (int) $address['country_id'] . "' AND (zone_id = '" . (int) $address['zone_id'] . "' OR zone_id = '0')");
+            $query = $this->db->query("SELECT *
+                                       FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int) $this->config->get('payment_paylike_geo_zone') . "'
+                                       AND country_id = '" . (int) $address['country_id'] . "'
+                                       AND (zone_id = '" . (int) $address['zone_id'] . "'
+                                       OR zone_id = '0')"
+                                    );
 
             if ($this->config->get('payment_paylike_minimum_total') > 0 && $this->config->get('payment_paylike_minimum_total') > $total) {
                 $status = false;
@@ -39,7 +48,7 @@ class ModelExtensionPaymentPaylike extends Model
             $logos_string = '';
             if (is_array($logos)) {
                 foreach ($logos as $logo) {
-                    $logos_string .= '<img src="'.HTTPS_SERVER.'catalog/view/theme/default/image/paylike/' . $logo . '" style="display-inline;height:25px;margin-left:5px;" />';
+                    $logos_string .= '<img src="' . HTTPS_SERVER . 'catalog/view/theme/default/image/paylike/' . $logo . '" style="display-inline;height:25px;margin-left:5px;" />';
                 }
             }
             $method_data = array(

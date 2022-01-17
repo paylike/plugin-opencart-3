@@ -15,25 +15,42 @@ class ControllerExtensionPaymentPaylike extends Controller
         $this->load->model('extension/payment/paylike');
 
         $this->model_extension_payment_paylike->install();
+
         $upgrade = false;
-        $query   = $this->db->query("SELECT table_name FROM information_schema.tables WHERE table_schema = '" . DB_DATABASE . "' AND table_name = '" . DB_PREFIX . "paylike_admin'");
+        $query   = $this->db->query("SELECT table_name
+                                     FROM information_schema.tables
+                                     WHERE table_schema = '" . DB_DATABASE . "' AND table_name = '" . DB_PREFIX . "paylike_admin'"
+                                    );
+
         if ($query->num_rows > 0) {
             $this->model_extension_payment_paylike->upgrade();
             $upgrade = true;
+        }
+
+        if ($upgrade) {
+            $data['success'] = $this->language->get('text_upgrade');
         }
 
         if (is_null($this->config->get('payment_paylike_method_title'))) {
             $this->session->data['error_warning'] = $this->language->get('text_setting_review_required');
         }
 
+
+        /**
+         * Check if it is POST method and update the paylike settings for specific store
+         */
         if (( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate()) {
-            $this->model_setting_setting->editSetting('payment_paylike', $this->request->post);
+
+            /** Get store ID & Update selected store settings for paylike module. */
+            $selectedStoreId = $this->request->post['payment_paylike_selected_store'];
+            $this->model_setting_setting->editSetting('payment_paylike', $this->request->post, $selectedStoreId);
+
             if (version_compare(VERSION, '3.0.0.0', '>=')) {
                 $redirect_url = $this->url->link('marketplace/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
             } else {
                 $this->request->post['paylike_status']     = $this->request->post['payment_paylike_status'];
                 $this->request->post['paylike_sort_order'] = $this->request->post['payment_paylike_sort_order'];
-                $this->model_setting_setting->editSetting('paylike', $this->request->post);
+                $this->model_setting_setting->editSetting('paylike', $this->request->post, $selectedStoreId);
                 $redirect_url = $this->url->link('extension/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
             }
 
@@ -41,6 +58,24 @@ class ControllerExtensionPaymentPaylike extends Controller
 
             $this->response->redirect($redirect_url);
         }
+
+
+        $data['stores']   = array();
+        /** Push default store to stores array. It is not extracted with getStores(). */
+        $data['stores'][] = array(
+            'store_id' => 0,
+            'name'     => $this->config->get('config_name') . ' ' . $this->language->get('text_default'),
+        );
+
+        /** Extract OpenCart stores. */
+        $stores = $this->model_setting_store->getStores();
+        foreach ($stores as $store) {
+            $data['stores'][] = array(
+                'store_id' => $store['store_id'],
+                'name'     => $store['name']
+            );
+        }
+
 
         $this->document->setTitle($this->language->get('heading_title'));
         $data['heading_title'] = $this->language->get('heading_title');
@@ -105,6 +140,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $data['help_geo_zone']                   = $this->language->get('help_geo_zone');
         $data['help_sort_order']                 = $this->language->get('help_sort_order');
         $data['help_store']                      = $this->language->get('help_store');
+        $data['help_select_store']               = $this->language->get('help_select_store');
 
 
         if (isset($this->error['error_payment_method_title'])) {
@@ -151,10 +187,6 @@ class ControllerExtensionPaymentPaylike extends Controller
             unset($this->session->data['success']);
         } else {
             $data['success'] = '';
-        }
-
-        if ($upgrade) {
-            $data['success'] = $this->language->get('text_upgrade');
         }
 
 
@@ -297,28 +329,6 @@ class ControllerExtensionPaymentPaylike extends Controller
             $data['payment_paylike_sort_order'] = 0;
         }
 
-        $data['stores']   = array();
-        $data['stores'][] = array(
-            'store_id' => 0,
-            'name'     => $this->language->get('text_default')
-        );
-        $stores           = $this->model_setting_store->getStores();
-        foreach ($stores as $store) {
-            $data['stores'][] = array(
-                'store_id' => $store['store_id'],
-                'name'     => $store['name']
-            );
-        }
-
-        if (isset($this->request->post['payment_paylike_store'])) {
-            $data['payment_paylike_store'] = $this->request->post['payment_paylike_store'];
-        } elseif (! is_null($this->config->get('payment_paylike_store'))) {
-            $data['payment_paylike_store'] = $this->config->get('payment_paylike_store');
-        } else {
-            $data['payment_paylike_store'] = array( 0 );
-        }
-
-
         $data['breadcrumbs']   = array();
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
@@ -358,18 +368,8 @@ class ControllerExtensionPaymentPaylike extends Controller
         $this->response->setOutput($this->load->view('extension/payment/paylike', $data));
     }
 
-    public function install()
-    {
-        $this->load->model('extension/payment/paylike');
-        $this->model_extension_payment_paylike->install();
-    }
 
-    public function uninstall()
-    {
-        $this->load->model('extension/payment/paylike');
-        $this->model_extension_payment_paylike->uninstall();
-    }
-
+    /** Get paylike payments. */
     public function payments()
     {
         $this->oc_token = version_compare(VERSION, '3.0.0.0', '>=') ? 'user_token' : $this->oc_token = 'token';
@@ -1000,4 +1000,34 @@ class ControllerExtensionPaymentPaylike extends Controller
 
         return $amount;
     }
+
+
+    /**
+     * Get Paylike settings for chosen store
+     */
+    public function get_paylike_store_settings()
+    {
+        /** Check if request is POST and store_id is set. */
+        if (('POST' == $this->request->server['REQUEST_METHOD']) && isset($this->request->post['store_id'])) {
+            $storeId = $this->request->post['store_id'];
+
+            echo json_encode($this->getPaylikeSettingsData($storeId));
+
+        } else {
+            echo '{"paylike_data_error": "Operation not allowed"}';
+        }
+    }
+
+
+    /** Get paylike settings selected by store id. */
+    private function getPaylikeSettingsData($storeId)
+    {
+        /** Load setting model. */
+        $this->load->model('setting/setting');
+        $settingModel = $this->model_setting_setting;
+
+        return $settingModel->getSetting('payment_paylike', $storeId);
+    }
+
+
 }

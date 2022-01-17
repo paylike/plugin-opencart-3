@@ -2,22 +2,6 @@
 
 class ModelExtensionPaymentPaylike extends Model
 {
-
-    public function getCcLogos()
-    {
-        return array(
-            array ( 'name' => 'Mastercard', 'logo' => 'mastercard.png' ),
-            array ( 'name' => 'Mastercard Maestro', 'logo' => 'maestro.png' ),
-            array ( 'name' => 'Visa', 'logo' => 'visa.png' ),
-            array ( 'name' => 'Visa Electron', 'logo' => 'visaelectron.png' ),
-        );
-    }
-
-    public function getTransactionTypes()
-    {
-        return array( 'Authorize', 'Capture', 'Refund', 'Void' );
-    }
-
     public function install()
     {
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paylike_transaction` (
@@ -33,32 +17,31 @@ class ModelExtensionPaymentPaylike extends Model
          `date_added` datetime NOT NULL,
          PRIMARY KEY (`paylike_transaction_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        
+
         $this->addEvents();
     }
 
     public function uninstall()
     {
         // $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paylike_transaction`");
-        
+
         $this->deleteEvents();
     }
-    
+
     /********************************* EVENTS ADD/DELETE BEGIN *************************************/
     public function addEvents()
     {
         $this->load->model('setting/event');
 
         /** Make sure that the event is introduce only once in DB. */
-        /** deleteEventByCode($code); */
-        $this->model_setting_event->deleteEventByCode('paylike_do_transaction_on_order_status_change');
-        
-        /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
-        $this->model_setting_event->addEvent(
-            'paylike_do_transaction_on_order_status_change',
-            'catalog/controller/api/order/history/after',
-            'extension/payment/paylike_transaction/doTransactionOnOrderStatusChange'
-        );
+        if(0 == $this->model_setting_event->getEventByCode('paylike_do_transaction_on_order_status_change')) {
+            /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
+            $this->model_setting_event->addEvent(
+                'paylike_do_transaction_on_order_status_change',
+                'catalog/controller/api/order/history/after',
+                'extension/payment/paylike_transaction/doTransactionOnOrderStatusChange'
+            );
+        }
     }
 
     public function deleteEvents()
@@ -68,10 +51,18 @@ class ModelExtensionPaymentPaylike extends Model
         $this->model_setting_event->deleteEventByCode('paylike_do_transaction_on_order_status_change');
     }
     /********************************* EVENTS ADD/DELETE END *************************************/
-    
-    
+
+    /**
+     * UPGARDE Paylike transactions table
+     * from paylike_admin to paylike_transaction
+     */
     public function upgrade()
     {
+        if (!is_null($this->config->get('paylike_status'))) {
+            $val = $this->config->get('paylike_status');
+            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_status', $val);
+            $this->config->set('payment_paylike_status', $val);
+        }
         if (!is_null($this->config->get('paylike_payment_method_title'))) {
             $val = $this->config->get('paylike_payment_method_title');
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_method_title', $val);
@@ -112,11 +103,6 @@ class ModelExtensionPaymentPaylike extends Model
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_app_key_live', $val);
             $this->config->set('payment_paylike_app_key_live', $val);
         }
-        if (!is_null($this->config->get('paylike_total'))) {
-            $val = $this->config->get('paylike_total');
-            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_minimum_total', $val);
-            $this->config->set('payment_paylike_minimum_total', $val);
-        }
         if (!is_null($this->config->get('paylike_capture'))) {
             $val = $this->config->get('paylike_capture');
             if ($val == '1') {
@@ -127,22 +113,21 @@ class ModelExtensionPaymentPaylike extends Model
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_capture_mode', $val);
             $this->config->set('payment_paylike_capture_mode', $val);
         }
+        if (!is_null($this->config->get('paylike_total'))) {
+            $val = $this->config->get('paylike_total');
+            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_minimum_total', $val);
+            $this->config->set('payment_paylike_minimum_total', $val);
+        }
         if (!is_null($this->config->get('paylike_geo_zone_id'))) {
             $val = $this->config->get('paylike_geo_zone_id');
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_geo_zone', $val);
             $this->config->set('payment_paylike_geo_zone', $val);
-        }
-        if (!is_null($this->config->get('paylike_status'))) {
-            $val = $this->config->get('paylike_status');
-            $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_status', $val);
-            $this->config->set('payment_paylike_status', $val);
         }
         if (!is_null($this->config->get('paylike_sort_order'))) {
             $val = $this->config->get('paylike_sort_order');
             $this->model_setting_setting->editSettingValue('payment_paylike', 'payment_paylike_sort_order', $val);
             $this->config->set('payment_paylike_sort_order', $val);
         }
-
 
         $query = $this->db->query("SELECT p.order_id, p.trans_id, p.amount, p.captured, o.currency_code, o.date_added FROM `" . DB_PREFIX . "paylike_admin` AS p LEFT JOIN `" . DB_PREFIX . "order` AS o ON p.order_id = o.order_id");
         if ($query->num_rows > 0) {
@@ -164,7 +149,17 @@ class ModelExtensionPaymentPaylike extends Model
                         $transaction_amount = 0;
                         $total_amount = 0;
                     }
-                    $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction` SET order_id = '" . $row['order_id'] . "', transaction_id = '" . $row['trans_id'] . "', transaction_type = '" . $transaction_type . "', transaction_currency = '" . strtoupper($row['currency_code']) . "', order_amount = '" . $order_amount . "', transaction_amount = '" . $transaction_amount . "', total_amount = '" . $total_amount . "', history = '0', date_added = '" . $row['date_added'] . "'");
+                    $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction`
+                                      SET order_id = '" . $row['order_id'] . "',
+                                          transaction_id = '" . $row['trans_id'] . "',
+                                          transaction_type = '" . $transaction_type . "',
+                                          transaction_currency = '" . strtoupper($row['currency_code']) . "',
+                                          order_amount = '" . $order_amount . "',
+                                          transaction_amount = '" . $transaction_amount . "',
+                                          total_amount = '" . $total_amount . "',
+                                          history = '0',
+                                          date_added = '" . $row['date_added'] . "'"
+                                    );
                 }
             }
         }
@@ -177,7 +172,27 @@ class ModelExtensionPaymentPaylike extends Model
         }
     }
 
-    public function getTotalTransactions()
+
+    public function getCcLogos()
+    {
+        return array(
+            array ( 'name' => 'Mastercard', 'logo' => 'mastercard.png' ),
+            array ( 'name' => 'Mastercard Maestro', 'logo' => 'maestro.png' ),
+            array ( 'name' => 'Visa', 'logo' => 'visa.png' ),
+            array ( 'name' => 'Visa Electron', 'logo' => 'visaelectron.png' ),
+        );
+    }
+
+
+    public function getTransactionTypes()
+    {
+        return array( 'Authorize', 'Capture', 'Refund', 'Void' );
+    }
+
+    /**
+     * GET total amount of Paylike transactions (filtered)
+     */
+    public function getTotalTransactions($data = array())
     {
         $sql = "SELECT COUNT(order_id) AS total FROM `" . DB_PREFIX . "paylike_transaction` WHERE history = '0'";
 
@@ -204,6 +219,9 @@ class ModelExtensionPaymentPaylike extends Model
         return $query->row['total'];
     }
 
+    /**
+     * GET Paylike transactions
+     */
     public function getTransactions($data = array())
     {
         $sql = "SELECT * FROM `" . DB_PREFIX . "paylike_transaction` WHERE history = '0'";
@@ -262,25 +280,68 @@ class ModelExtensionPaymentPaylike extends Model
         return $query->rows;
     }
 
+    /**
+     * GET last Paylike transaction by paylike_transaction_id
+     */
     public function getLastTransaction($ref)
     {
-        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paylike_transaction` WHERE transaction_id = '" . $ref . "' ORDER BY paylike_transaction_id DESC LIMIT 1");
+        $query = $this->db->query("SELECT *
+                                    FROM `" . DB_PREFIX . "paylike_transaction`
+                                    WHERE transaction_id = '" . $ref . "'
+                                    ORDER BY paylike_transaction_id
+                                    DESC
+                                    LIMIT 1"
+                                );
         return $query->row;
     }
 
+    /**
+     * ADD transaction in paylike_transaction table
+     */
     public function addTransaction($data)
     {
-        $this->db->query("UPDATE `" . DB_PREFIX . "paylike_transaction` SET history = 1 WHERE history = '0' AND transaction_id = '" . $data['transaction_id'] . "'");
-        $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction` SET order_id = '" . $data['order_id'] . "', transaction_id = '" . $data['transaction_id'] . "', transaction_type = '" . $data['transaction_type'] . "', transaction_currency = '" . $data['transaction_currency'] . "', order_amount = '" . $data['order_amount'] . "', transaction_amount = '" . $data['transaction_amount'] . "', total_amount = '" . $data['total_amount'] . "', history = '" . $data['history'] . "', date_added = '" . $data['date_added'] . "'");
+        $this->db->query("UPDATE `" . DB_PREFIX . "paylike_transaction`
+                            SET history = 1
+                            WHERE history = '0'
+                            AND transaction_id = '" . $data['transaction_id'] . "'"
+                        );
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction`
+                            SET order_id = '" . $data['order_id'] . "',
+                            transaction_id = '" . $data['transaction_id'] . "',
+                            transaction_type = '" . $data['transaction_type'] . "',
+                            transaction_currency = '" . $data['transaction_currency'] . "',
+                            order_amount = '" . $data['order_amount'] . "',
+                            transaction_amount = '" . $data['transaction_amount'] . "',
+                            total_amount = '" . $data['total_amount'] . "',
+                            history = '" . $data['history'] . "',
+                            date_added = '" . $data['date_added'] . "'"
+                        );
     }
 
+    /**
+     * UPDATE order
+     */
     public function updateOrder($data, $new_order_status_id)
     {
         if ($new_order_status_id > 0) {
-            $this->db->query("UPDATE `" . DB_PREFIX . "order` SET order_status_id = '" . $new_order_status_id . "', date_modified = NOW() WHERE order_id = '" . $data['order_id'] . "'");
+            /** Update order. */
+            $this->db->query("UPDATE `" . DB_PREFIX . "order`
+                                SET order_status_id = '" . $new_order_status_id . "',
+                                    date_modified = NOW()
+                                WHERE order_id = '" . $data['order_id'] . "'"
+                            );
+
             $comment = 'Paylike transaction: ref:' . $data['transaction_id'];
             $comment .= "\r\n" . 'Type: ' . $data['transaction_type'] . ', Amount: ' . $data['transaction_amount'] . ' ' . strtoupper($data['transaction_currency']);
-            $this->db->query("INSERT INTO " . DB_PREFIX . "order_history SET order_id = '" . $data['order_id'] . "', order_status_id = '" . $new_order_status_id . "', notify = '0', comment = '" . $this->db->escape($comment) . "', date_added = NOW()");
+
+            /** Update order history. */
+            $this->db->query("INSERT INTO " . DB_PREFIX . "order_history
+                                SET order_id = '" . $data['order_id'] . "',
+                                order_status_id = '" . $new_order_status_id . "',
+                                notify = '0',
+                                comment = '" . $this->db->escape($comment) . "',
+                                date_added = NOW()"
+                            );
         }
     }
 }

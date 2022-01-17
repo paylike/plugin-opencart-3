@@ -7,7 +7,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $this->load->language('extension/payment/paylike');
         $this->load->model('extension/payment/paylike');
         $this->load->model('checkout/order');
-        $data['plugin_version'] = '1.3.0';
+        $data['plugin_version'] = '1.4.0';
         $data['VERSION'] = VERSION;
         $data['active_mode']=$this->config->get('payment_paylike_api_mode');
 
@@ -180,7 +180,19 @@ class ControllerExtensionPaymentPaylike extends Controller
                     $json['success']     = $this->language->get('success_message_captured');
                 }
 
-                $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction` SET order_id = '" . $order_info['order_id'] . "', transaction_id = '" . $ref . "', transaction_type = '" . $type . "', transaction_currency = '" . $order_info['currency_code'] . "', order_amount = '" . $amount['paylike_converted'] . "', transaction_amount = '" . $transaction_amount . "', total_amount = '" . $total_amount . "', history = '0', date_added = NOW()");
+                /** Insert new paylike transaction. */
+                $this->db->query("INSERT INTO `" . DB_PREFIX . "paylike_transaction`
+                                    SET order_id = '" . $order_info['order_id'] . "',
+                                        transaction_id = '" . $ref . "',
+                                        transaction_type = '" . $type . "',
+                                        transaction_currency = '" . $order_info['currency_code'] . "',
+                                        order_amount = '" . $amount['paylike_converted'] . "',
+                                        transaction_amount = '" . $transaction_amount . "',
+                                        total_amount = '" . $total_amount . "',
+                                        history = '0',
+                                        date_added = NOW()"
+                                );
+
                 $this->model_checkout_order->addOrderHistory($order_info['order_id'], $new_order_status_id, $comment);
 
                 $json['redirect'] = $this->url->link('checkout/success', '', true);

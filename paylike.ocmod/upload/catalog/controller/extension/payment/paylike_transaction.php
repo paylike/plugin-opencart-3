@@ -31,29 +31,24 @@ class ControllerExtensionPaymentPaylikeTransaction extends Controller
          */
         if (isset($_GET['order_id']) && $order = $this->model_checkout_order->getOrder($_GET['order_id'])) {
 
-            if ($order['payment_code'] === 'paylike') {
+            if ('paylike' === $order['payment_code']) {
 
                 /**
                  * Extract last Paylike transaction for current order.
-                 * - prepare query data
                  * - load paylike_transaction model
                  * - get last transaction
                  */
-                $queryData = [
-                    'filter_order_id' => $order['order_id'],
-                    'start' => 0,
-                    'limit' => 1,
-                ];
-
                 $this->load->model('extension/payment/paylike_transaction');
-                $lastTransaction = $this->model_extension_payment_paylike_transaction->getTransactions($queryData);
+                $lastTransaction = $this->model_extension_payment_paylike_transaction->getLastPaylikeTransaction($order['order_id']);
 
                 /**
                  * Create new Std object to be used in execute() method bellow.
                  */
                 $this->orderData = new StdClass();
 
-                $this->orderData->ref = $lastTransaction[0]['transaction_id'];
+                $this->orderData->order_store_id = $order['store_id'];
+                $this->orderData->order_id = $order['order_id'];
+                $this->orderData->ref = $lastTransaction['transaction_id'];
                 $this->orderData->amount = $order['total'];
 
                 /** Check type of transaction. */
@@ -109,11 +104,13 @@ class ControllerExtensionPaymentPaylikeTransaction extends Controller
         $log = $this->config->get('payment_paylike_logging') ? true : false;
         require_once(DIR_SYSTEM . 'library/Paylike/Client.php');
 
+        $orderStoreId = $this->orderData->order_store_id;
+        $orderId      = $this->orderData->order_id;
         $ref          = $this->orderData->ref;
         $type         = $this->orderData->type;
         $input_amount = $this->orderData->amount;
 
-        $history = $this->model_extension_payment_paylike_transaction->getLastTransaction($ref);
+        $history = $this->model_extension_payment_paylike_transaction->getLastPaylikeTransaction($orderId);
         $history['transaction_currency'] = strtoupper($history['transaction_currency']);
 
         if (is_null($history)) {
@@ -130,7 +127,11 @@ class ControllerExtensionPaymentPaylikeTransaction extends Controller
             $this->logger->write('Transaction Reference: ' . $ref);
         }
 
-        $app_key = $this->config->get('payment_paylike_api_mode') == 'live' ? $this->config->get('payment_paylike_app_key_live') : $this->config->get('payment_paylike_app_key_test');
+
+        $paylikeSettingsData = $this->model_extension_payment_paylike_transaction->getPaylikeSettingsData($orderStoreId);
+        $app_key = $paylikeSettingsData['payment_paylike_api_mode'] == 'live' ?
+                    $paylikeSettingsData['payment_paylike_app_key_live'] :
+                    $paylikeSettingsData['payment_paylike_app_key_test'];
 
         Paylike\Client::setKey($app_key);
         $trans_data = Paylike\Transaction::fetch($ref);
