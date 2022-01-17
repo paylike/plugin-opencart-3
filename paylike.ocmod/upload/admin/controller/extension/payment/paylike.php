@@ -8,9 +8,7 @@ class ControllerExtensionPaymentPaylike extends Controller
     public function index()
     {
         $this->oc_token = version_compare(VERSION, '3.0.0.0', '>=') ? 'user_token' : $this->oc_token = 'token';
-        $this->load->model('setting/setting');
         $this->load->language('extension/payment/paylike');
-        $this->load->model('setting/store');
         $this->load->model('tool/image');
         $this->load->model('extension/payment/paylike');
 
@@ -36,45 +34,12 @@ class ControllerExtensionPaymentPaylike extends Controller
         }
 
 
-        /**
-         * Check if it is POST method and update the paylike settings for specific store
-         */
-        if (( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate()) {
-
-            /** Get store ID & Update selected store settings for paylike module. */
-            $selectedStoreId = $this->request->post['payment_paylike_selected_store'];
-            $this->model_setting_setting->editSetting('payment_paylike', $this->request->post, $selectedStoreId);
-
-            if (version_compare(VERSION, '3.0.0.0', '>=')) {
-                $redirect_url = $this->url->link('marketplace/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
-            } else {
-                $this->request->post['paylike_status']     = $this->request->post['payment_paylike_status'];
-                $this->request->post['paylike_sort_order'] = $this->request->post['payment_paylike_sort_order'];
-                $this->model_setting_setting->editSetting('paylike', $this->request->post, $selectedStoreId);
-                $redirect_url = $this->url->link('extension/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
-            }
-
-            $this->session->data['success'] = $this->language->get('text_success');
-
-            $this->response->redirect($redirect_url);
-        }
+        /** Check if it is an update call and change store settings. */
+        $this->checkUpdateStoreSettings();
 
 
-        $data['stores']   = array();
-        /** Push default store to stores array. It is not extracted with getStores(). */
-        $data['stores'][] = array(
-            'store_id' => 0,
-            'name'     => $this->config->get('config_name') . ' ' . $this->language->get('text_default'),
-        );
-
-        /** Extract OpenCart stores. */
-        $stores = $this->model_setting_store->getStores();
-        foreach ($stores as $store) {
-            $data['stores'][] = array(
-                'store_id' => $store['store_id'],
-                'name'     => $store['name']
-            );
-        }
+        /** Get all opencart stores, including default. */
+        $data['stores']   = $this->getAllStoresAsArray();
 
 
         $this->document->setTitle($this->language->get('heading_title'));
@@ -1029,5 +994,90 @@ class ControllerExtensionPaymentPaylike extends Controller
         return $settingModel->getSetting('payment_paylike', $storeId);
     }
 
+    /**
+     * Use custom function to get all opencart stores, including default.
+     *
+     * @return array
+     */
+    private function getAllStoresAsArray()
+    {
+        $storesArray   = [];
+        /** Push default store to stores array. It is not extracted with getStores(). */
+        $storesArray[] = [
+            'store_id' => 0,
+            'name'     => $this->config->get('config_name') . ' ' . $this->language->get('text_default'),
+        ];
+
+        $this->load->model('setting/store');
+        /** Extract OpenCart stores. */
+        $opencartStores = $this->model_setting_store->getStores();
+
+        foreach ($opencartStores as $opencartStore) {
+            $storesArray[] = array(
+                'store_id' => $opencartStore['store_id'],
+                'name'     => $opencartStore['name']
+            );
+        }
+
+        return $storesArray;
+    }
+
+    /**
+     * Check if it is POST method and update the paylike settings for specific store
+     */
+    private function checkUpdateStoreSettings()
+    {
+        if (( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate()) {
+
+            $this->load->model('setting/setting');
+
+            /** Get store ID & Update selected store settings for paylike module. */
+            $selectedStoreId = $this->request->post['payment_paylike_selected_store'];
+
+            if (version_compare(VERSION, '3.0.0.0', '>=')) {
+                $paylikeSettingsCode = 'payment_paylike';
+                $this->model_setting_setting->editSetting($paylikeSettingsCode, $this->request->post, $selectedStoreId);
+                $redirect_url = $this->url->link('marketplace/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
+            } else {
+                $paylikeSettingsCode = 'paylike';
+                $this->request->post['paylike_status']     = $this->request->post['payment_paylike_status'];
+                $this->request->post['paylike_sort_order'] = $this->request->post['payment_paylike_sort_order'];
+                $this->model_setting_setting->editSetting('paylike', $this->request->post, $selectedStoreId);
+                $redirect_url = $this->url->link('extension/extension', $this->oc_token . '=' . $this->session->data[ $this->oc_token ] . '&type=payment', true);
+            }
+
+            $this->setDisabledPaylikeStatusOnOtherStores($paylikeSettingsCode);
+
+            $this->session->data['success'] = $this->language->get('text_success');
+
+            $this->response->redirect($redirect_url);
+        }
+    }
+
+    /**
+     * Set status = disabled on stores that not have paylike settings yet (null).
+     * @abstract If we save Paylike settings on one store, then in other store
+     *           the Paylike payment method shows up, even if it is not set up
+     *
+     * @param string $paylikeSettingsCode
+     * @return void
+     */
+    private function setDisabledPaylikeStatusOnOtherStores($paylikeSettingsCode)
+    {
+        $allStores = $this->getAllStoresAsArray();
+
+        $paylikeStatusStringKey = $paylikeSettingsCode . '_status';
+
+        foreach ($allStores as $store) {
+
+            /** Get all store settings by store id. */
+            $storePaylikeSettings = $this->model_setting_setting->getSetting($paylikeSettingsCode, $store['store_id']);
+
+            /** Check if Paylike status is set & it is null, then set it on 0 (= disabled). */
+            if (isset($storePaylikeSettings[$paylikeStatusStringKey]) && null === $storePaylikeSettings[$paylikeStatusStringKey]) {
+                $this->model_setting_setting->editSetting($paylikeSettingsCode, [$paylikeStatusStringKey => 0], $store['store_id']);
+            }
+        }
+    }
 
 }
