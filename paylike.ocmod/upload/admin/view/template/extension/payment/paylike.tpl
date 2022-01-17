@@ -416,6 +416,7 @@
 </div>
 
 <script type="text/javascript">
+
     $('#tabs a:first').tab('show');
 
     /** Triggern on selection change */
@@ -431,8 +432,8 @@
             $('.js-live-key').css('display','block');
             $('.js-test-key').css('display','none');
         } else {
-        $('.js-live-key').css('display','none');
-        $('.js-test-key').css('display','block');
+            $('.js-live-key').css('display','none');
+            $('.js-test-key').css('display','block');
         }
     }
 
@@ -479,7 +480,6 @@
                     }
                 });
 
-
                 $("#input_payment_method_title").val(data?.["payment_paylike_method_title"]);
                 $("#input_checkout_popup_title").val(data?.["payment_paylike_checkout_title"]);
 
@@ -496,8 +496,9 @@
                 });
 
 
-                /** Set selected on api mode dropdown. Default = test. */
-                setSelectedAttributeOnSelectedOption("input_api_mode", data?.["payment_paylike_api_mode"] ?? "test");
+                /** Set selected on api mode dropdown. Default = live. */
+                setSelectedAttributeOnSelectedOption("input_api_mode", data?.["payment_paylike_api_mode"] ?? "live");
+                toggleFields(data?.["payment_paylike_api_mode"] ?? "live")
                 /** Set selected on capture mode dropdown. Default = delayed. */
                 setSelectedAttributeOnSelectedOption("input_capture_mode", data?.["payment_paylike_capture_mode"] ?? "delayed");
 
