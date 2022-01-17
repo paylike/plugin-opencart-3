@@ -33,8 +33,9 @@ class ModelExtensionPaymentPaylike extends Model
     {
         $this->load->model('setting/event');
 
-        /** Make sure that the event is introduce only once in DB. */
-        if(0 == $this->model_setting_event->getEventByCode('paylike_do_transaction_on_order_status_change')) {
+        /** Check if event is in database 'event' table (the result of getEventByCode is an array). */
+        if(empty($this->model_setting_event->getEventByCode('paylike_do_transaction_on_order_status_change'))) {
+            /** Make sure that the event is introduce only once in DB. */
             /** addEvent($code, $trigger, $action, $status = 1, $sort_order = 0); */
             $this->model_setting_event->addEvent(
                 'paylike_do_transaction_on_order_status_change',
