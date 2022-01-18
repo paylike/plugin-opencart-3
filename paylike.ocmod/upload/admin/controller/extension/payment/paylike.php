@@ -1073,8 +1073,8 @@ class ControllerExtensionPaymentPaylike extends Controller
             /** Get all store settings by store id. */
             $storePaylikeSettings = $this->model_setting_setting->getSetting($paylikeSettingsCode, $store['store_id']);
 
-            /** Check if Paylike status is set & it is null, then set it on 0 (= disabled). */
-            if (isset($storePaylikeSettings[$paylikeStatusStringKey]) && null === $storePaylikeSettings[$paylikeStatusStringKey]) {
+            /** Check if Paylike status is not set, then set it on 0 (= disabled). */
+            if (!isset($storePaylikeSettings[$paylikeStatusStringKey])) {
                 $this->model_setting_setting->editSetting($paylikeSettingsCode, [$paylikeStatusStringKey => 0], $store['store_id']);
             }
         }
