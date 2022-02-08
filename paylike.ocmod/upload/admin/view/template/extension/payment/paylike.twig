@@ -35,9 +35,35 @@
                 <h3 class="panel-title" data-paylike-version="{{ text_paylike_version }}"><i class="fa fa-pencil"></i>&nbsp;{{ text_edit_settings }}</h3>
             </div>
             <div class="panel-body">
+
                 <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-paylike"
                         class="form-horizontal">
+
                     <div class="alert alert-info">{{ text_description }}</div>
+
+                    {# Store select begin #}
+                    <div class="col-sm-12 pr-40 required">
+                        <label class="col-sm-2 control-label" for="payment_paylike_selected_store"><span
+                                    data-toggle="tooltip"
+                                    title="{{ help_select_store }}">{{ select_store }}</span></label>
+                        <div class="col-sm-10">
+                            <select name="payment_paylike_selected_store" id="payment_paylike_selected_store"
+                                    class="form-control">
+                                {% for store in stores %}
+                                        <option value="{{ store.store_id }}"
+                                            {% if store.store_id == payment_paylike_selected_store %}
+                                                {{ 'selected="selected"' }}
+                                            {% endif %}>
+                                            {{ store.name }}
+                                        </option>
+                                {% endfor %}
+                            </select>
+                            <div class="select-store-dropdown-error"></div>
+                        </div>
+                    </div>
+                    {# Store select end #}
+
+
 
                     <ul class="nav nav-tabs" id="tabs">
                         <li class="active"><a href="#tab-general_settings"
@@ -315,30 +341,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-2 control-label"><span data-toggle="tooltip"
-                                            title="{{ help_store }}">{{ entry_store }}</span></label>
-                                <div class="col-sm-10">
-                                    <div class="well well-sm" style="overflow: auto;">
-                                        {% for store in stores %}
-                                            <div class="checkbox">
-                                                <label>
-                                                    {% if store.store_id in payment_paylike_store %}
-                                                        <input type="checkbox" name="payment_paylike_store[]"
-                                                                value="{{ store.store_id }}" checked="checked"/>
-                                                        {{ store.name }}
-                                                    {% else %}
-                                                        <input type="checkbox" name="payment_paylike_store[]"
-                                                                value="{{ store.store_id }}"/>
-                                                        {{ store.name }}
-                                                    {% endif %}
-                                                </label>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input_minimum_total"><span
                                             data-toggle="tooltip"
                                             title="{{ help_minimum_total }}">{{ entry_minimum_total }}</span></label>
@@ -389,26 +391,150 @@
     </div>
 </div>
 
+
 <script type="text/javascript">
-        $('#tabs a:first').tab('show');
 
-        /** Triggern on selection change */
-        $(document).on('change','#input_api_mode', function(){
-            toggleFields($(this).val());
-        });
-        /** Triggern on when DOM is ready */
-        toggleFields($("#input_api_mode").val());
+    $('#tabs a:first').tab('show');
 
-        /** Show/Hide live and test fields based on selected value of the "#input_api_mode" selectbox*/
-        function toggleFields(mode){
-          if(mode == 'live'){
-              $('.js-live-key').css('display','block');
-              $('.js-test-key').css('display','none');
-          } else {
+    /** Triggered on selection change */
+    $(document).on('change','#input_api_mode', function(){
+        toggleFields($(this).val());
+    });
+    /** Triggered on when DOM is ready */
+    toggleFields($("#input_api_mode").val());
+
+    /** Show/Hide live and test fields based on selected value of the "#input_api_mode" selectbox*/
+    function toggleFields(mode){
+        if(mode == 'live'){
+            $('.js-live-key').css('display','block');
+            $('.js-test-key').css('display','none');
+        } else {
             $('.js-live-key').css('display','none');
             $('.js-test-key').css('display','block');
-          }
         }
+    }
+
+
+    /**
+     * On select a store, populate paylike form data with seleted store  Paylike data
+     */
+    $("#payment_paylike_selected_store").on("change", function() {
+
+        /** Remove any previous errors. */
+        $(".select-store-dropdown-error").val();
+
+        /** Set store ID variable. */
+        storeId = $(this).val();
+
+        /** Ajax call to get selected store paylike data. */
+        $.ajax({
+            method: "POST",
+            url: "index.php?route=extension/payment/paylike/get_paylike_store_settings&user_token=" + getURLVar("user_token"),
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            data: {
+                store_id: storeId
+            },
+            success: function (data, status, xhr) {
+
+                /** Add selected attribute to selected store option */
+                setSelectedAttributeOnSelectedOption(this.id, storeId)
+
+                /** Add status option to status input. If not exists, change to disabled. */
+                $("#input_paylike_status option").each(function () {
+                    if (data?.["payment_paylike_status"]) {
+                        if (data["payment_paylike_status"] !== $(this).val()) {
+                            $(this).removeAttr("selected");
+                        } else {
+                            $(this).attr("selected", true);
+                        }
+                    } else {
+                        if (1 == $(this).val()) {
+                            $(this).removeAttr("selected");
+                        } else {
+                            $(this).attr("selected", true);
+                        }
+                    }
+                });
+
+
+                $("#input_payment_method_title").val(data?.["payment_paylike_method_title"]);
+                $("#input_checkout_popup_title").val(data?.["payment_paylike_checkout_title"]);
+
+                $("input[name='payment_paylike_checkout_cc_logo[]']").each(function () {
+                    if ("payment_paylike_checkout_cc_logo" in data) {
+                        if ( ! data["payment_paylike_checkout_cc_logo"].includes($(this).val())) {
+                            $(this).prop("checked", false);
+                        } else {
+                            $(this).prop("checked", true);
+                        }
+                    } else {
+                        $(this).prop("checked", true);
+                    }
+                });
+
+
+                /** Set selected on api mode dropdown. Default = live. */
+                setSelectedAttributeOnSelectedOption("input_api_mode", data?.["payment_paylike_api_mode"] ?? "live");
+                toggleFields(data?.["payment_paylike_api_mode"] ?? "live")
+                /** Set selected on capture mode dropdown. Default = delayed. */
+                setSelectedAttributeOnSelectedOption("input_capture_mode", data?.["payment_paylike_capture_mode"] ?? "delayed");
+
+                $("#input_app_key_test").val(data?.["payment_paylike_app_key_test"]);
+                $("#input_public_key_test").val(data?.["payment_paylike_public_key_test"]);
+                $("#input_app_key_live").val(data?.["payment_paylike_app_key_live"]);
+                $("#input_public_key_live").val(data?.["payment_paylike_public_key_live"]);
+
+                $("#input_authorize_status_id").val(data?.["payment_paylike_authorize_status_id"] ?? 1);
+                $("#input_capture_status_id").val(data?.["payment_paylike_capture_status_id"] ?? 5);
+                $("#input_refund_status_id").val(data?.["payment_paylike_refund_status_id"] ?? 11);
+                $("#input_void_status_id").val(data?.["payment_paylike_void_status_id"] ?? 16);
+
+                $("#input_logging").val(data?.["payment_paylike_logging"] ?? 0);
+                $("#input_minimum_total").val(data?.["payment_paylike_minimum_total"] ?? 0);
+                $("#input_geo_zone").val(data?.["payment_paylike_geo_zone"] ?? 0);
+                $("#input_sort_order").val(data?.["payment_paylike_sort_order"] ?? 0);
+
+            },
+            error: function (jqXhr, textStatus, errorMessage) {
+                /** Check if error is of type "parsererror". This shows up when token expire. */
+                if ('parsererror' == textStatus) {
+                    location.href = 'index.php?route=extension/payment/paylike';
+                } else {
+                    $(".select-store-dropdown-error").append("Error: " + errorMessage).addClass("text-danger");
+                    console.error(errorMessage)
+                }
+            }
+        });
+
+    });
+
+
+    /** Paylike status set "selected" on change. */
+    $("#input_paylike_status").on("change", function() {
+        setSelectedAttributeOnSelectedOption(this.id, $(this).val());
+    });
+
+    /** Paylike api mode set "selected" on change. */
+    $("#input_api_mode").on("change", function() {
+        setSelectedAttributeOnSelectedOption(this.id, $(this).val());
+    });
+
+    /**
+     * Function "Set Selected Attribute On Selected Option"
+     * Set selected attribute on dropdown selected option
+     */
+    function setSelectedAttributeOnSelectedOption(selector, value) {
+        $("#" + selector + " option").each(function () {
+            if (value !== $(this).val()) {
+                $(this).removeAttr("selected");
+            } else {
+                $(this).attr("selected", true);
+            }
+        });
+    }
+
+
 </script>
 
 {{ footer }}
