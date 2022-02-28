@@ -101,7 +101,7 @@ export var TestMethods = {
         cy.goToPage(this.StoreUrl + '/index.php?route=checkout/checkout');
 
         /** Continue. */
-        cy.wait(500);
+        cy.wait(1000);
         cy.get('#button-payment-address').click();
         cy.wait(100);
         cy.get('#button-shipping-address').click();
