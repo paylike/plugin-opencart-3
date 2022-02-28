@@ -101,9 +101,13 @@ export var TestMethods = {
         cy.goToPage(this.StoreUrl + '/index.php?route=checkout/checkout');
 
         /** Continue. */
+        cy.wait(500);
         cy.get('#button-payment-address').click();
+        cy.wait(100);
         cy.get('#button-shipping-address').click();
+        cy.wait(100);
         cy.get('#button-shipping-method').click();
+        cy.wait(100);
 
         /** Choose Paylike. */
         cy.get(`input[value=${this.PaylikeName}]`).click();
@@ -115,7 +119,7 @@ export var TestMethods = {
         cy.get('#button-payment-method').click();
 
         /** Wait to load Paylike SDK. */
-        cy.wait(1000);
+        cy.wait(2000);
 
         /** Check amount. */
         cy.get('tfoot> tr:nth-child(3) > td:nth-child(2)').then($grandTotal => {
@@ -133,7 +137,7 @@ export var TestMethods = {
          */
          PaylikeTestHelper.fillAndSubmitPaylikePopup();
 
-        cy.wait(1000);
+        cy.wait(2000);
 
         cy.get('h1').should('contain', 'Your order has been placed!');
     },
@@ -200,6 +204,8 @@ export var TestMethods = {
         }
 
         cy.get('#button-history').click();
+
+        cy.wait(300);
 
         /** Check if success message. */
         cy.get('.alert.alert-success').should('be.visible');
