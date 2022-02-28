@@ -5,3 +5,4 @@
 !/*/vendor
 logs
 git-hooks
+.env.production
