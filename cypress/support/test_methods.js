@@ -98,7 +98,7 @@ export var TestMethods = {
         cy.get('#button-cart').click();
 
         /** Wait the product to add to cart. */
-        cy.wait(500);
+        cy.wait(1000);
 
         /** Go to checkout. */
         cy.goToPage(this.StoreUrl + '/index.php?route=checkout/checkout');
