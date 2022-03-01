@@ -106,11 +106,11 @@ export var TestMethods = {
         /** Continue. */
         cy.wait(1000);
         cy.get('#button-payment-address').click();
-        cy.wait(300);
+        cy.wait(500);
         cy.get('#button-shipping-address').click();
-        cy.wait(300);
+        cy.wait(500);
         cy.get('#button-shipping-method').click();
-        cy.wait(300);
+        cy.wait(500);
 
         /** Choose Paylike. */
         cy.get(`input[value=${this.PaylikeName}]`).click();
