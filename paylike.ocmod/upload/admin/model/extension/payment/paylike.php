@@ -315,7 +315,7 @@ class ModelExtensionPaymentPaylike extends Model
                             transaction_amount = '" . $data['transaction_amount'] . "',
                             total_amount = '" . $data['total_amount'] . "',
                             history = '" . $data['history'] . "',
-                            date_added = '" . $data['date_added'] . "'"
+                            date_added = " . $data['date_added'] // date_added is a SQL function
                         );
     }
 

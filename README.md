@@ -13,8 +13,6 @@ You can also find information about the plugin here: https://paylike.io/plugins/
 
 *The plugin has been tested with most versions of Opencart at every iteration. We recommend using the latest version of Opencart, but if that is not possible for some reason, test the plugin with your OpenCart version and it would probably function properly.*
 
-Last tested version: Opencart 3.0.3.8
-
 ## Prerequisites
 
 - The plugin works with vQmod, but also with OCMOD, no need to install vQmod if you don't already need it.
@@ -82,6 +80,9 @@ Under the extension settings, you can:
         * Paylike admin panel: full/partial void
 
 ## Changelog
+
+#### 1.4.1:
+* Fixed insert date for paylike transactions issued from admin panel
 
 #### 1.4.0:
 * Added multistore support
