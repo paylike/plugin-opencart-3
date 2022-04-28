@@ -424,7 +424,7 @@
         $(".select-store-dropdown-error").val();
 
         /** Set store ID variable. */
-        storeId = $(this).val();
+        var storeId = $(this).val();
 
         /** Ajax call to get selected store paylike data. */
         $.ajax({
@@ -484,7 +484,9 @@
                 $("#input_public_key_test").val(data?.["payment_paylike_public_key_test"]);
                 $("#input_app_key_live").val(data?.["payment_paylike_app_key_live"]);
                 $("#input_public_key_live").val(data?.["payment_paylike_public_key_live"]);
-
+                /**
+                 * !!! HARDCODED ORDER STATUSES IDS !!!
+                 */
                 $("#input_authorize_status_id").val(data?.["payment_paylike_authorize_status_id"] ?? 1);
                 $("#input_capture_status_id").val(data?.["payment_paylike_capture_status_id"] ?? 5);
                 $("#input_refund_status_id").val(data?.["payment_paylike_refund_status_id"] ?? 11);
