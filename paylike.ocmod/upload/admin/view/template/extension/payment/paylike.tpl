@@ -33,7 +33,7 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title" data-paylike-version="<?php echo text_paylike_version; ?>"><i class="fa fa-pencil"></i>&nbsp;<?php echo $text_edit_settings; ?></h3>
+                <h3 class="panel-title" data-paylike-version="<?php echo $text_paylike_version; ?>"><i class="fa fa-pencil"></i>&nbsp;<?php echo $text_edit_settings; ?></h3>
             </div>
             <div class="panel-body">
                 <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-paylike"
@@ -46,17 +46,17 @@
                     <div class="col-sm-12 pr-40 required">
                         <label class="col-sm-2 control-label" for="payment_paylike_selected_store"><span
                                     data-toggle="tooltip"
-                                    title="<?php echo help_select_store; ?>"><?php echo select_store; ?></span></label>
+                                    title="<?php echo $help_select_store; ?>"><?php echo $select_store; ?></span></label>
                         <div class="col-sm-10">
                             <select name="payment_paylike_selected_store" id="payment_paylike_selected_store"
                                     class="form-control">
-                                <?php foreach (stores as store): ?>
-                                        <option value="<?php echo store['store_id']; ?>"
-                                            <?php if(store['store_id'] == payment_paylike_selected_store): ?>
-                                                <?php echo 'selected="selected"'; ?>
-                                            <?php endif ?>
+                                <?php foreach ($stores as $store): ?>
+                                        <option value="<?php echo $store['store_id']; ?>"
+                                            <?php if($store['store_id'] == $payment_paylike_selected_store){
+                                                echo 'selected="selected"';
+                                            } ?>
                                             >
-                                            <?php echo store['name']; ?>
+                                            <?php echo $store['name']; ?>
                                         </option>
                                 <?php endforeach ?>
                             </select>
@@ -341,30 +341,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-2 control-label"><span data-toggle="tooltip"
-                                            title="<?php echo $help_store; ?>"><?php echo $entry_store; ?></span></label>
-                                <div class="col-sm-10">
-                                    <div class="well well-sm" style="overflow: auto;">
-                                        <?php foreach($stores as $store){ ?>
-                                        <div class="checkbox">
-                                            <label>
-                                                <?php if(in_array($store['store_id'], $payment_paylike_store)){ ?>
-                                                <input type="checkbox" name="payment_paylike_store[]"
-                                                        value="<?php echo $store['store_id']; ?>" checked="checked"/>
-                                                <?php echo $store['name']; ?>
-                                                <?php } else { ?>
-                                                <input type="checkbox" name="payment_paylike_store[]"
-                                                        value="<?php echo $store['store_id']; ?>"/>
-                                                <?php echo $store['name']; ?>
-                                                <?php } ?>
-                                            </label>
-                                        </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input_minimum_total"><span
                                             data-toggle="tooltip"
                                             title="<?php echo $help_minimum_total; ?>"><?php echo $entry_minimum_total; ?></span></label>
@@ -447,7 +423,7 @@
         $(".select-store-dropdown-error").val();
 
         /** Set store ID variable. */
-        storeId = $(this).val();
+        var storeId = $(this).val();
 
         /** Ajax call to get selected store paylike data. */
         $.ajax({
@@ -506,7 +482,9 @@
                 $("#input_public_key_test").val(data?.["payment_paylike_public_key_test"]);
                 $("#input_app_key_live").val(data?.["payment_paylike_app_key_live"]);
                 $("#input_public_key_live").val(data?.["payment_paylike_public_key_live"]);
-
+                /**
+                 * !!! HARDCODED ORDER STATUSES IDS !!!
+                 */
                 $("#input_authorize_status_id").val(data?.["payment_paylike_authorize_status_id"] ?? 1);
                 $("#input_capture_status_id").val(data?.["payment_paylike_capture_status_id"] ?? 5);
                 $("#input_refund_status_id").val(data?.["payment_paylike_refund_status_id"] ?? 11);

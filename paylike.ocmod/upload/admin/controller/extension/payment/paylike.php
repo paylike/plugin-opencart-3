@@ -294,6 +294,13 @@ class ControllerExtensionPaymentPaylike extends Controller
             $data['payment_paylike_sort_order'] = 0;
         }
 
+        /** Select option in stores dropdown field. */
+        if (isset($this->request->post['payment_paylike_selected_store'])) {
+            $data['payment_paylike_selected_store'] = $this->request->post['payment_paylike_selected_store'];
+        } else {
+            $data['payment_paylike_selected_store'] = 0;
+        }
+
         $data['breadcrumbs']   = array();
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),

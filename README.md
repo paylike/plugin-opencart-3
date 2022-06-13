@@ -81,6 +81,9 @@ Under the extension settings, you can:
 
 ## Changelog
 
+#### 1.4.2:
+* Fixed amount calculation
+
 #### 1.4.1:
 * Fixed insert date for paylike transactions issued from admin panel
 

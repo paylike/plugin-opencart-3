@@ -219,7 +219,7 @@ class ControllerExtensionPaymentPaylike extends Controller
         $amount['order_amount']      = $order_amount;
         $amount['store_converted']   = $this->currency->format($amount['order_amount'], $currency_code, false, false);
         $amount['store_formatted']   = $this->currency->format($amount['order_amount'], $currency_code, false, true);
-        $amount['paylike']           = ceil($amount['store_converted'] * $multiplier);
+        $amount['paylike']           = ceil(round($amount['store_converted'] * $multiplier));
         $amount['paylike_converted'] = $this->currency->format($amount['paylike'] / $multiplier, $currency_code, 1, false);
         $amount['paylike_formatted'] = $this->currency->format($amount['paylike'] / $multiplier, $currency_code, 1, true);
 
